@@ -79,7 +79,8 @@ def mask_node_attrs(G, alpha, attr_key):
         s = math.floor(n * (1-alpha))
         action = 'mask'
     # sample
-    nodes = set(range(n))
+    # nodes = set(range(n))
+    nodes = set(G.nodes())
     sample_nodes = set()
     for s_i in range(s):
         node = random.choice(list(nodes))
@@ -229,7 +230,7 @@ def experiment(G,attr_key, alphas=ALPHAS,k=100):
 # l = experiment(G, attr_key='gender')
 # pd.DataFrame(l, columns=['alpha', 'avg_acc']).to_csv('net1m_results.tsv', index=False,sep='\t')
 # print(l)
-### plot
+# ## plot
 # df_p = pd.read_csv('net1m_results.tsv', delimiter='\t')
 # plt.plot(df_p['alpha'], df_p['avg_acc'])
 # plt.xlabel('alpha (fraction of nodes observed)')
@@ -238,8 +239,43 @@ def experiment(G,attr_key, alphas=ALPHAS,k=100):
 # plt.savefig('net1m_plot.png')
 
 ### hvr5
-G = nx.read_edgelist('HVR_5.txt',delimiter=',',data=False,nodetype=int)
-print(G)
+# nodes seem to be one-indexed
+# G = nx.read_edgelist('HVR_5.txt',delimiter=',',data=False,nodetype=int)
+# print(G)
+# s = pd.read_csv('metadata_CysPoLV.txt', delimiter=',', usecols=[0],comment='#',header=None).squeeze()
+# for i in range(1,308): # {1,...,307} derived from metadata file
+#     if i in G.nodes():
+#         G.nodes[i]['seq'] = s[i-1] # nodes are 1-indexed, while series is 0-indexed
+#     else:
+#         G.add_node(i, seq=s[i-1])
+# l = experiment(G, attr_key='seq')
+# pd.DataFrame(l, columns=['alpha', 'avg_acc']).to_csv('hvr5_results.tsv', index=False,sep='\t')
+###plot 
+# df_p = pd.read_csv('hvr5_results.tsv', delimiter='\t')
+# plt.plot(df_p['alpha'], df_p['avg_acc'])
+# plt.xlabel('alpha (fraction of nodes observed)')
+# plt.ylabel('average accuracy')
+# plt.title('hvr5 average accuracy of local smoothing')
+# plt.savefig('hvr5_plot.png')
+
+### plot both w/ subplots
+df_p1 = pd.read_csv('net1m_results.tsv', delimiter='\t')
+df_p2 = pd.read_csv('hvr5_results.tsv', delimiter='\t')
+# rm last row alpha=1
+df_p1 = df_p1.iloc[0:df_p1.shape[0]-1,:]
+df_p2= df_p2.iloc[0:df_p2.shape[0]-1,:]
+fig, (ax1, ax2) = plt.subplots(1,2)
+ax1.plot(df_p1['alpha'], df_p1['avg_acc'])
+ax1.set_xlabel('alpha (fraction of nodes observed)')
+ax1.set_ylabel('average accuracy')
+ax1.set_title('Net1m')
+ax1.set_ylim(0,1)
+ax2.plot(df_p2['alpha'], df_p2['avg_acc'])
+ax2.set_xlabel('alpha (fraction of nodes observed)')
+ax2.set_title('HVR5')
+ax2.set_ylim(0,1)
+fig.suptitle('Average accuracy of local smoothing')
+plt.savefig('ps3-q1a.png')
 
 
     
