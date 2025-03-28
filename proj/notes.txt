@@ -1,0 +1,28 @@
+03/27/2025
+experiment 1:
+let the t and m vary and measure (clustering coefficient [C], LCC size, # of components, mean degree, diameter, etc.)
+steps:
+1. see how I get corr matrix
+    - price2cor.py
+        - finds symbols with overlapping dates
+        - computes a log return vector for t step (t=1) for now
+        - computes correlation of the log return vectors
+    - what are next steps?
+    - write script to generate network from corr matrix
+        - rank the correlations 
+            - can use min heap to keep track of top k correlations
+                - ex here: https://github.com/jakekrol/genefusion/blob/main/genefusion/genefusion/genefusion.py#L13-L30
+                - maybe store as json {r1: {s_i: <symbol i>, s_j: <symbol j>, w: <corr>} ...}
+    
+problem: seems like some symbols are duplicated based 
+on whether shareholders have voting rights or not
+- let's choose the ones without voting rights
+    - excluded symbols: GOOGL, FOXA, DISCA
+
+idea: at each step track if the edge was drawn for
+companies in the same sector
+
+idea: plot the corr distribution for a given t
+    - looks normally distributed for t=1
+
+idea: plot the graph at m = 10, 1000, 10000
