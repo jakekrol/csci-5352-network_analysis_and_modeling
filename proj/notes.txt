@@ -26,3 +26,12 @@ idea: plot the corr distribution for a given t
     - looks normally distributed for t=1
 
 idea: plot the graph at m = 10, 1000, 10000
+
+2. write script to compute G stats at various m
+    - stats:
+        - clustering coefficient [C]
+        - LCC size
+        - # of components
+        - mean degree
+        - diameter
+3. next write a script for random graph
