@@ -1,3 +1,35 @@
+03/29/2025
+The graph I generated on 03/27/2025 is clusters very well by sector 
+- # of edges: ~100
+- \deltat = 1
+- added node metadata
+
+do random graph generation
+done: see rank2graph.py's cor2g_rand function
+
+experiment 1:
+    T = 1762
+    try the following ts: 1 (daily), 5 (weekly), 20 (monthly), 60 (quarterly), 240 (annual)
+    where each trading week has 5 days
+
+    how to choose max m?
+        for t=1, the correlation distribution is zero-inflated, can go until corr is less than 0.1
+    ? what does corr dist look like for other t?
+    or use 1 standard deviation above the mean of correlation distribution
+    steps:
+        - compute log return for each t
+        - compute correlation matrix
+        - compute correlation distribution
+        - get mean and std of the distribution
+        - choose m = mean + std
+        - rank 
+
+next steps:
+    - do log return for t=5, 20, 60, 240
+    - compute correlation matrix
+    - compute correlation distribution
+    - finish experiment 1
+
 03/27/2025
 experiment 1:
 let the t and m vary and measure (clustering coefficient [C], LCC size, # of components, mean degree, diameter, etc.)
@@ -35,3 +67,4 @@ idea: plot the graph at m = 10, 1000, 10000
         - mean degree
         - diameter
 3. next write a script for random graph
+

@@ -38,7 +38,8 @@ df = pd.read_csv('./prices-split-adjusted.csv')
 #         f.write(date+'\n')
 
 ### symbols with 1762 dates
-# grep 1762 dates.txt | cut -d' ' -f1 > symbols.txt
+# grep 1762 dates.txt | cut -d' ' -f1 | \
+    # grep -v "GOOGL" | grep -v FOXA | grep -v DISCA > symbols.txt
 symbols = []
 with open('symbols.txt','r') as f:
     for line in f:
