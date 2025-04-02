@@ -109,7 +109,9 @@ def plotg(g, out, color=False):
         file.write(f"<p>{cmap_filtered}</p>\n")  # Wrap the dictionary in a <p> tag
 
 def rank2g(df, m, output_pattern, steps):
-    comb = list(itertools.combinations(df.index, 2))
+    if 'cor' not in df.columns:
+        raise ValueError('input looks like a correlation table, not a rank table. please provide a rank table instead')
+    df = df.sort_values(by='cor', ascending=False) # sort by correlation
     g = nx.Graph()
     ms = []
     mean_degs = []
@@ -155,6 +157,7 @@ def rank2g(df, m, output_pattern, steps):
             # plot graph
             print(f'plotting graph at {i+1} edges')
             plotg(g,f'{output_pattern}_e{i+1}.html', color=True)
+        print(i)
     stats = pd.DataFrame({'m':ms,'mean_deg':mean_degs,'C':Cs,'n_lcc':n_lccs,'diameter':diameters})
     return g, stats
 
@@ -210,6 +213,7 @@ def cor2g_rand(df, m, output_pattern, steps, seed = 0):
             # plot graph
             print(f'plotting graph at {i+1} edges')
             plotg(g,f'{output_pattern}_e{i+1}.html', color=True)
+        print(i)
     stats = pd.DataFrame({'m':ms,'mean_deg':mean_degs,'C':Cs,'n_lcc':n_lccs,'diameter':diameters})
     return g, stats
 

@@ -30,6 +30,11 @@ if not args.text:
     # annotate mean and stddev
     plt.text(0.8, 0.8,f'mean: {round(mu,2)}', transform=plt.gca().transAxes)
     plt.text(0.8, 0.7,f'stddev: {round(sigma,2)}', transform=plt.gca().transAxes)
+    # min and max
+    plt.text(0.8,0.6, f'min: {round(np.min(C),2)}', transform=plt.gca().transAxes)
+    plt.text(0.8,0.5, f'max: {round(np.max(C),2)}', transform=plt.gca().transAxes)
+    # median
+    plt.text(0.8,0.4, f'median: {round(np.median(C),2)}', transform=plt.gca().transAxes)
     plt.savefig(args.output)
     plt.close()
 else:

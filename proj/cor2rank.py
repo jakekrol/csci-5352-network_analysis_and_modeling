@@ -4,8 +4,14 @@ import heapq
 import sys,os
 import numpy as np
 import math
+import argparse
 
-df = pd.read_csv('./correlation.csv', index_col=0)
+parser = argparse.ArgumentParser(description='Correlation to Rank')
+parser.add_argument('--input', '-i', type=str, required=True, help='input correlation matrix file')
+parser.add_argument('--timestep', '-t', type=int, default=1, help='timestep for log return calculation')
+args = parser.parse_args()
+
+df = pd.read_csv(args.input, index_col=0)
 
 k=math.comb(df.shape[0],2)
 hq = []
@@ -21,4 +27,4 @@ for i in range(df.shape[0]):
                 heapq.heapreplace(hq, (sym_i,sym_j,cor)) # replace smallest element in heap
 topk= sorted(hq,reverse=True, key=lambda x: x[2])
 df = pd.DataFrame(topk,columns=['sym1','sym2','cor'])
-df.to_csv('topk.csv',index=False)
+df.to_csv(f'rank_{args.timestep}.csv',index=False)

@@ -1,3 +1,53 @@
+
+
+04/01/2025
+- debugged rank2g.py's rank2g function:
+    - needed to pass in rank table, not correlation matrix
+experiment 1 (done)
+steps:
+    - compute log return for each t (done)
+    - compute correlation matrix (done)
+    - compute correlation distribution (done)
+    - get mean and std of the distribution (done)
+    - run cor2rank for all corr matrices (done)
+    - run rank2g.py with m = 464 choose 2 = n choose 2 = 107416, plot at 10, 50, 100, 1000 nodes
+        - let's do m = 1000, for now. n choose 2 is too large
+        - computing the stats takes too long
+
+idea: compute assortativity of corr and random graphs
+
+next steps:
+    1. experiment 2: make corr graphs at t=1 and let m vary again
+    - make a correlation matrix for each year separately
+    - let t = 1, 5, 20, 60, 240, and m vary up to 1000
+    - compute the same stats as before
+    steps:
+        - split prices-split-adjusted by year
+        - run same pipeline as experiment 1
+    2. Analysis of experiment 1 results
+
+03/30/2025
+do log return for t=5, 20, 60, 240
+steps:
+    - (done) modify price2cor.py to support diff t
+        - see price2return.py
+results:
+    - ran price2return.py for t=5, 20, 60, 240
+        - outputs: 
+            - log return matrix
+            - correlation matrix
+            - correlation distribution
+
+- ran cor2rank for all corr matrices
+- running rank2.gpy for all ranks
+prev cmds: ./rank2g.py -i topk.csv -r -m 100 -s 10,50,100 -p -o rand
+maybe do 10,000 edges total (m)
+and steps 10, 50, 100, 1000
+
+next steps:
+    -debug rank2g's rank2g function, very slow
+    probably the unused combination  computation
+
 03/29/2025
 The graph I generated on 03/27/2025 is clusters very well by sector 
 - # of edges: ~100
