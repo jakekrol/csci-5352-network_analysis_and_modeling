@@ -18,17 +18,18 @@ parser.add_argument('--m', '-m', type=int, required=True, help='number of edges'
 parser.add_argument('--rand', '-r', action='store_true', help='randomize edges')
 parser.add_argument('--plot', '-p', action='store_true', help='plot graph')
 parser.add_argument('--out', '-o', type=str, required=True, help='output pattern')
-parser.add_argument('--steps', '-s', type=str, required=True, help='comma-separated set of edge integers to plot at')
+parser.add_argument('--steps', '-s', type=str, help='comma-separated set of edge integers to plot at')
 args = parser.parse_args()
 
 # meta
+SYMBOLS = '/home/jake/ghub/csci-5352-network_analysis_and_modeling/proj/symbols.txt'
 NODE_META='/home/jake/ghub/csci-5352-network_analysis_and_modeling/proj/securities.csv'
 df_node_meta = pd.read_csv(NODE_META)
 
-
 # steps
-steps = set(args.steps.split(','))
-steps = {int(i) for i in steps}
+if args.steps:
+    args.steps = set(args.steps.split(','))
+    args.steps = {int(i) for i in args.steps}
 
 # print parsed args
 print('# args')
@@ -36,7 +37,7 @@ print('input',args.input)
 print('m',args.m)
 print('rand',args.rand)
 print('out',args.out)
-print('steps',steps)
+print('steps',args.steps)
 
 # cmap
 colors = [
@@ -118,6 +119,9 @@ def rank2g(df, m, output_pattern, steps):
     Cs = []
     n_lccs = []
     diameters = []
+    n_comp=[]
+    mods=[]
+    partition = {k:set() for k in cmap.keys()}
     for i,row in df.iterrows():
         if i == m:
             break
@@ -129,11 +133,22 @@ def rank2g(df, m, output_pattern, steps):
             g.add_node(sym1)
             for key in d:
                 g.nodes[sym1][key] = d[key]
+                if key == 'sector':
+                    sector = d[key]
+                    partition[sector].add(sym1)
         if not g.has_node(sym2):
             d = get_node_meta(sym2)
             g.add_node(sym2)
             for key in d:
                 g.nodes[sym2][key] = d[key]
+                if key == 'sector':
+                    sector = d[key]
+                    partition[sector].add(sym2)
+        # do list of sets instead of dict
+        p = []
+        for k,v in partition.items():
+            if len(v) > 0:
+                p.append(v)
         # edges
         cor = row['cor']
         g.add_edge(sym1,sym2, weight = cor)
@@ -142,23 +157,30 @@ def rank2g(df, m, output_pattern, steps):
         C = nx.transitivity(g)
         lcc = max(nx.connected_components(g), key=len)
         n_lcc = len(lcc)
+        n_components = nx.number_connected_components(g)
         # diameter w.r.t largest connected component
         if n_lcc > 1:
             diameter = nx.diameter(g.subgraph(lcc))
         else:
             diameter = 0
+        mod = nx.community.modularity(g, p)
         ms.append(i+1)
         mean_degs.append(mean_deg)
         Cs.append(C)
         n_lccs.append(n_lcc)
         diameters.append(diameter)
+        n_comp.append(n_components)
+        mods.append(mod)
         # plot
-        if i+1 in steps:
-            # plot graph
-            print(f'plotting graph at {i+1} edges')
-            plotg(g,f'{output_pattern}_e{i+1}.html', color=True)
+        if args.plot:
+            if i+1 in steps:
+                # plot graph
+                print(f'plotting graph at {i+1} edges')
+                plotg(g,f'{output_pattern}_e{i+1}.html', color=True)
         print(i)
-    stats = pd.DataFrame({'m':ms,'mean_deg':mean_degs,'C':Cs,'n_lcc':n_lccs,'diameter':diameters})
+    stats = pd.DataFrame(
+        {'m':ms,'mean_deg':mean_degs,'C':Cs,'n_lcc':n_lccs,'diameter':diameters,
+         'n_comp':n_comp,'modularity':mods})
     return g, stats
 
 def cor2g_rand(df, m, output_pattern, steps, seed = 0):
@@ -174,6 +196,9 @@ def cor2g_rand(df, m, output_pattern, steps, seed = 0):
     Cs = []
     n_lccs = []
     diameters = []
+    n_comp = []
+    mods=[]
+    partition = {k:set() for k in cmap.keys()}
     for i in range(m):
         if i == m:
             break
@@ -185,11 +210,22 @@ def cor2g_rand(df, m, output_pattern, steps, seed = 0):
             g.add_node(sym1)
             for key in d:
                 g.nodes[sym1][key] = d[key]
+                if key == 'sector':
+                    sector = d[key]
+                    partition[sector].add(sym1)
         if not g.has_node(sym2):
             d = get_node_meta(sym2)
             g.add_node(sym2)
             for key in d:
                 g.nodes[sym2][key] = d[key]
+                if key == 'sector':
+                    sector = d[key]
+                    partition[sector].add(sym2)
+        # do list of sets instead of dict
+        p = []
+        for k,v in partition.items():
+            if len(v) > 0:
+                p.append(v)
         # edges
         cor = df.loc[sym1,sym2]
         g.add_edge(sym1,sym2, weight = cor)
@@ -198,36 +234,53 @@ def cor2g_rand(df, m, output_pattern, steps, seed = 0):
         C = nx.transitivity(g)
         lcc = max(nx.connected_components(g), key=len)
         n_lcc = len(lcc)
+        n_components = nx.number_connected_components(g)
         # diameter w.r.t largest connected component
         if n_lcc > 1:
             diameter = nx.diameter(g.subgraph(lcc))
         else:
             diameter = 0
+        mod = nx.community.modularity(g, p)
         ms.append(i+1)
         mean_degs.append(mean_deg)
         Cs.append(C)
         n_lccs.append(n_lcc)
         diameters.append(diameter)
+        n_comp.append(n_components)
+        mods.append(mod)
         # plot
-        if i+1 in steps:
-            # plot graph
-            print(f'plotting graph at {i+1} edges')
-            plotg(g,f'{output_pattern}_e{i+1}.html', color=True)
+        if args.plot:
+            if i+1 in steps:
+                # plot graph
+                print(f'plotting graph at {i+1} edges')
+                plotg(g,f'{output_pattern}_e{i+1}.html', color=True)
         print(i)
-    stats = pd.DataFrame({'m':ms,'mean_deg':mean_degs,'C':Cs,'n_lcc':n_lccs,'diameter':diameters})
+    stats = pd.DataFrame({'m':ms,'mean_deg':mean_degs,'C':Cs,'n_lcc':n_lccs,'diameter':diameters,
+                          'n_comp':n_comp,'modularity':mods})
     return g, stats
 
 def main():
+    # set node communities by sector
+    # partition={k:[] for k in cmap.keys()} 
+    # with open(SYMBOLS) as f:
+    #     for line in f:
+    #         s = line.strip()
+    #         sector = get_node_meta(s)['sector']
+    #         if sector in cmap.keys():
+    #             partition[sector].append(s)
+    #         else:
+    #             raise ValueError(f'symbol {s} not found in cmap')
+    # graphs
     if args.rand:
         df = pd.read_csv(args.input, index_col=0) # read corr
         print('generating random graphs')
-        _, stats = cor2g_rand(df, args.m, args.out, steps)
-        stats.to_csv(f'{args.out}_stats.csv', index=False, sep ='\t')
+        _, stats = cor2g_rand(df, args.m, args.out, args.steps)
+        stats.to_csv(f'{args.out}_stats.tsv', index=False, sep ='\t')
     else:
         df = pd.read_csv(args.input) # read rank
         print('generating graphs')
-        _, stats = rank2g(df, args.m, args.out, steps)
-        stats.to_csv(f'{args.out}_stats.csv', index=False, sep ='\t')
+        _, stats = rank2g(df, args.m, args.out, args.steps)
+        stats.to_csv(f'{args.out}_stats.tsv', index=False, sep ='\t')
     print('done')
 main()
 

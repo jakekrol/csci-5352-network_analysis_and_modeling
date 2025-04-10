@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description='Calculate log return of stock pric
 parser.add_argument('--prices', '-p', type=str, required=True, help='input stock prices file')
 parser.add_argument('--symbols', '-s', type=str, required=True, help='input symbols file')
 parser.add_argument('--timestep', '-t', type=int, default=1, help='timestep for log return calculation')
+parser.add_argument('--outpattern', '-o', type=str, default='return', help='output pattern')
 args = parser.parse_args()
 
 ### data
@@ -74,16 +75,16 @@ for sym in symbols:
         d_return[sym].append(diff)
 # convert to datafraem
 df_return = pd.DataFrame(d_return)
-df_return.to_csv(f'log_return_{args.timestep}.csv', index=False)
+df_return.to_csv(f'{args.outpattern}.log_return.t{args.timestep}.csv', index=False)
 
 ### correlation of log return vectors
 # df_return = pd.read_csv('log_return.csv')
-df_return = pd.read_csv(f'log_return_{args.timestep}.csv')
+df_return = pd.read_csv(f'{args.outpattern}.log_return.t{args.timestep}.csv')
 print(df_return.columns)
 cor = df_return.corr(method='pearson')
 print(cor)
 # cor.to_csv('correlation.csv')
-cor.to_csv(f'correlation_{args.timestep}.csv')
+cor.to_csv(f'{args.outpattern}.correlation.t{args.timestep}.csv')
 
 
 

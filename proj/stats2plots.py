@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 
 
+# for experiment 1
 # input: stats file
 # output: plot of stats
 
@@ -14,24 +15,46 @@ parser.add_argument('--output', '-o', type=str, required=True, help='output plot
 # parser.add_argument('--title', '-t', type=str, required=True, help='plot title')
 # parser.add_argument('--xlabel', '-x', type=str, required=True, help='x-axis label')
 # parser.add_argument('--ylabel', '-y', type=str, required=True, help='y-axis label')
+# parser.add_argument('--stats', '-s', type=str, required=True, help='comma delim stats to plot')
+parser.add_argument('--stats', '-s', type=int, required=True, help='1 for C,modularity and 2 for all other stats')
 
 args = parser.parse_args()
+
+# STATS = set(['mean_deg', 'C', 'n_lcc', 'diameter', 'n_comp', 'modularity'])
+# stats = set(args.stats.split(','))
+# assert stats.issubset(STATS), f"Invalid stats: {stats - STATS}. Valid stats are: {STATS}"
 
 # read stats file
 df = pd.read_csv(args.input, sep='\t')
 
 # plot all stats as a function of 'm' column
 
-# mean_deg
-plt.plot(df['m'], df['mean_deg'], label='mean_deg')
-# C
-plt.plot(df['m'], df['C'], label='C')
-# n_lcc
-plt.plot(df['m'], df['n_lcc'].apply(lambda x: np.log10(x)), label='log10(n_lcc)')
-# diameter
-plt.plot(df['m'], df['diameter'], label='diameter')
+# for s in stats:
+#     if s == 'n_lcc':
+#         df[s] = df[s].apply(lambda x: np.log2(x) if x > 0 else 0)
+#     plt.plot(df['m'], df[s], label=s)
+if args.stats == 1:
+    # plot C and modularity
+    plt.plot(df['m'], df['C'], label='clustering coef. (C)')
+    plt.plot(df['m'], df['modularity'], label='modularity')
+    plt.hlines(y=0,xmin=0,xmax=1000, color='black', linestyle='dashed', label = 'not (dis)assortative')
+    plt.ylim(-1, 1)
+elif args.stats == 2:
+    # plot all other stats
+    plt.plot(df['m'], df['mean_deg'], label='mean degree (<k>)')
+    plt.plot(df['m'], df['n_lcc'].apply(lambda x: np.log2(x)), label='log2(|LCC|)')
+    plt.plot(df['m'], df['diameter'], label='diameter (l_max)')
+    plt.plot(df['m'], df['n_comp'].apply(lambda x: np.log2(x)), label='log2(num. components)')
+    plt.ylim(0,40)
+plt.xlabel('Number of edges (m)')
 plt.legend()
 plt.savefig(args.output)
 plt.close()
 
 
+    # # C
+    # plt.plot(df['m'], df['C'], label='C')
+    # # n_lcc
+    # plt.plot(df['m'], df['n_lcc'].apply(lambda x: np.log2(x)), label='log2(n_lcc)')
+    # # diameter
+    # plt.plot(df['m'], df['diameter'], label='diameter')
