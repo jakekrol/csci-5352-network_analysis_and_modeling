@@ -109,6 +109,19 @@ def plotg(g, out, color=False):
         file.write(f"<style>p {{ font-size: 20px; }}</style>\n")
         file.write(f"<p>{cmap_filtered}</p>\n")  # Wrap the dictionary in a <p> tag
 
+def g2stats(g, partition):
+    # stats: mean degree, clustering coefficient, modularity, diameter, number of components, size LCC
+    mean_k = sum(dict(g.degree()).values()) / g.number_of_nodes()
+    C = nx.transitivity(g)
+    lcc = max(nx.connected_components(g), key=len)
+    n_lcc = len(lcc)
+    assert n_lcc > 0, 'lcc is empty'
+    n_components = nx.number_connected_components(g)
+    # diameter w.r.t largest connected component
+    diameter = nx.diameter(g.subgraph(lcc))
+    mod = nx.community.modularity(g, partition)
+    return {'mean_deg':mean_k, 'C':C, 'n_lcc':n_lcc, 'diameter':diameter, 'n_comp':n_components, 'modularity':mod}
+
 def rank2g(df, m, output_pattern, steps):
     if 'cor' not in df.columns:
         raise ValueError('input looks like a correlation table, not a rank table. please provide a rank table instead')
