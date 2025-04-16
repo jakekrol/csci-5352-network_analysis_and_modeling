@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "pink", "id": "BXP", "label": "BXP", "location": "Boston, Massachusetts", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "VNO", "label": "VNO", "location": "New York, New York", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "SPG", "label": "SPG", "location": "Indianapolis, Indiana", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "EQR", "label": "EQR", "location": "Chicago, Illinois", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "AIV", "label": "AIV", "location": "Denver, Colorado", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "FRT", "label": "FRT", "location": "Rockville, Maryland", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Retail REITs"}, {"color": "pink", "id": "ESS", "label": "ESS", "location": "Palo Alto, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "pink", "id": "AVB", "label": "AVB", "location": "Arlington, Virginia[3]", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "pink", "id": "SLG", "label": "SLG", "location": "New York, New York", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Office REITs"}, {"color": "pink", "id": "UDR", "label": "UDR", "location": "Highlands Ranch, Colorado", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "pink", "id": "PSA", "label": "PSA", "location": "Glendale, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "HST", "label": "HST", "location": "Bethesda, Maryland", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "KIM", "label": "KIM", "location": "New Hyde Park, New York", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "VTR", "label": "VTR", "location": "Chicago, Illinois", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "PLD", "label": "PLD", "location": "San Francisco, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "MAC", "label": "MAC", "location": "Santa Monica, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Retail REITs"}, {"color": "magenta", "id": "CSX", "label": "CSX", "location": "Jacksonville, Florida", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Railroads"}, {"color": "magenta", "id": "NSC", "label": "NSC", "location": "Norfolk, Virginia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Railroads"}, {"color": "magenta", "id": "UNP", "label": "UNP", "location": "Omaha, Nebraska", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Railroads"}, {"color": "pink", "id": "HCP", "label": "HCP", "location": "Long Beach, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "HCN", "label": "HCN", "location": "Toledo, Ohio", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "MAA", "label": "MAA", "location": "Memphis, Tennessee", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "lightred", "id": "CCL", "label": "CCL", "location": "Miami, Florida", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Hotels, Resorts \u0026 Cruise Lines"}, {"color": "lightred", "id": "RCL", "label": "RCL", "location": "Miami, Florida", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Hotels, Resorts \u0026 Cruise Lines"}, {"color": "orange", "id": "BEN", "label": "BEN", "location": "San Mateo, California", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Asset Management \u0026 Custody Banks"}, {"color": "orange", "id": "TROW", "label": "TROW", "location": "Baltimore, Maryland", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "BAC", "label": "BAC", "location": "Charlotte, North Carolina", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "JPM", "label": "JPM", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "yellow", "id": "ADI", "label": "ADI", "location": "Norwood, Massachusetts", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "yellow", "id": "LLTC", "label": "LLTC", "location": "Milpitas, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "yellow", "id": "TXN", "label": "TXN", "location": "Dallas, Texas", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "yellow", "id": "MCHP", "label": "MCHP", "location": "Chandler, Arizona", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "lightred", "id": "DHI", "label": "DHI", "location": "Fort Worth, Texas", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Homebuilding"}, {"color": "lightred", "id": "PHM", "label": "PHM", "location": "Atlanta, Georgia", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Homebuilding"}, {"color": "green", "id": "COP", "label": "COP", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "CVX", "label": "CVX", "location": "San Ramon, California", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Integrated Oil \u0026 Gas"}, {"color": "brown", "id": "MLM", "label": "MLM", "location": "Raleigh, North Carolina", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Construction Materials"}, {"color": "brown", "id": "VMC", "label": "VMC", "location": "Birmingham, Alabama", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Construction Materials"}, {"color": "orange", "id": "AFL", "label": "AFL", "location": "Columbus, Georgia", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Life \u0026 Health Insurance"}, {"color": "orange", "id": "TMK", "label": "TMK", "location": "McKinney, Texas", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Life \u0026 Health Insurance"}, {"color": "orange", "id": "PFG", "label": "PFG", "location": "Des Moines, Iowa", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "MET", "label": "MET", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Life \u0026 Health Insurance"}, {"color": "orange", "id": "PRU", "label": "PRU", "location": "Newark, New Jersey", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "USB", "label": "USB", "location": "Minneapolis, Minnesota", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "WFC", "label": "WFC", "location": "San Francisco, California", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "LNC", "label": "LNC", "location": "Radnor, Pennsylvania", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Multi-line Insurance"}, {"color": "yellow", "id": "KLAC", "label": "KLAC", "location": "Milpitas, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductor Equipment"}, {"color": "yellow", "id": "LRCX", "label": "LRCX", "location": "Fremont, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductor Equipment"}, {"color": "magenta", "id": "COL", "label": "COL", "location": "Cedar Rapids, Iowa", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "magenta", "id": "HON", "label": "HON", "location": "Morristown, New Jersey", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "magenta", "id": "GD", "label": "GD", "location": "Falls Church, Virginia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Aerospace \u0026 Defense"}, {"color": "magenta", "id": "NOC", "label": "NOC", "location": "West Falls Church, Virginia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Aerospace \u0026 Defense"}]);
+                  edges = new vis.DataSet([{"from": "BXP", "to": "VNO", "width": 1}, {"from": "BXP", "to": "SPG", "width": 1}, {"from": "BXP", "to": "EQR", "width": 1}, {"from": "BXP", "to": "AIV", "width": 1}, {"from": "BXP", "to": "FRT", "width": 1}, {"from": "BXP", "to": "ESS", "width": 1}, {"from": "BXP", "to": "AVB", "width": 1}, {"from": "BXP", "to": "SLG", "width": 1}, {"from": "BXP", "to": "UDR", "width": 1}, {"from": "BXP", "to": "PSA", "width": 1}, {"from": "BXP", "to": "HST", "width": 1}, {"from": "BXP", "to": "KIM", "width": 0.8587743823187095}, {"from": "BXP", "to": "VTR", "width": 0.8510821284522916}, {"from": "BXP", "to": "PLD", "width": 0.8493249462601244}, {"from": "VNO", "to": "SPG", "width": 1}, {"from": "VNO", "to": "FRT", "width": 1}, {"from": "VNO", "to": "EQR", "width": 1}, {"from": "VNO", "to": "AIV", "width": 1}, {"from": "VNO", "to": "KIM", "width": 1}, {"from": "VNO", "to": "PSA", "width": 1}, {"from": "VNO", "to": "ESS", "width": 1}, {"from": "VNO", "to": "UDR", "width": 1}, {"from": "VNO", "to": "AVB", "width": 1}, {"from": "VNO", "to": "SLG", "width": 0.8572254009288716}, {"from": "VNO", "to": "VTR", "width": 0.8539844262790339}, {"from": "VNO", "to": "HST", "width": 0.8508903949159944}, {"from": "VNO", "to": "PLD", "width": 0.8450798142767195}, {"from": "VNO", "to": "MAC", "width": 0.8343584749252586}, {"from": "SPG", "to": "FRT", "width": 1}, {"from": "SPG", "to": "EQR", "width": 1}, {"from": "SPG", "to": "AIV", "width": 1}, {"from": "SPG", "to": "KIM", "width": 1}, {"from": "SPG", "to": "UDR", "width": 1}, {"from": "SPG", "to": "PSA", "width": 0.856892846431886}, {"from": "SPG", "to": "VTR", "width": 0.854019416055563}, {"from": "SPG", "to": "MAC", "width": 0.8518753745436634}, {"from": "SPG", "to": "ESS", "width": 0.8436912171810018}, {"from": "SPG", "to": "AVB", "width": 0.843144842844218}, {"from": "SPG", "to": "HST", "width": 0.8425591684530785}, {"from": "CSX", "to": "NSC", "width": 1}, {"from": "CSX", "to": "UNP", "width": 1}, {"from": "NSC", "to": "UNP", "width": 1}, {"from": "FRT", "to": "EQR", "width": 1}, {"from": "FRT", "to": "VTR", "width": 1}, {"from": "FRT", "to": "PSA", "width": 1}, {"from": "FRT", "to": "AVB", "width": 1}, {"from": "FRT", "to": "UDR", "width": 1}, {"from": "FRT", "to": "AIV", "width": 0.8589865782984708}, {"from": "FRT", "to": "ESS", "width": 0.8554535884406756}, {"from": "FRT", "to": "HCP", "width": 0.8467489207475614}, {"from": "FRT", "to": "HCN", "width": 0.842837771213932}, {"from": "FRT", "to": "HST", "width": 0.8378032797728918}, {"from": "FRT", "to": "SLG", "width": 0.8367422596321208}, {"from": "EQR", "to": "ESS", "width": 1}, {"from": "EQR", "to": "AVB", "width": 1}, {"from": "EQR", "to": "UDR", "width": 1}, {"from": "EQR", "to": "AIV", "width": 1}, {"from": "EQR", "to": "KIM", "width": 1}, {"from": "EQR", "to": "MAA", "width": 1}, {"from": "EQR", "to": "PSA", "width": 0.8560737957743622}, {"from": "EQR", "to": "VTR", "width": 0.8468126921453644}, {"from": "EQR", "to": "PLD", "width": 0.8458778655238008}, {"from": "EQR", "to": "HST", "width": 0.8351273993342386}, {"from": "ESS", "to": "AVB", "width": 1}, {"from": "ESS", "to": "UDR", "width": 1}, {"from": "ESS", "to": "AIV", "width": 1}, {"from": "AVB", "to": "UDR", "width": 1}, {"from": "AVB", "to": "AIV", "width": 1}, {"from": "AVB", "to": "MAA", "width": 0.8372138177921453}, {"from": "AIV", "to": "HST", "width": 1}, {"from": "AIV", "to": "UDR", "width": 1}, {"from": "AIV", "to": "SLG", "width": 0.8506305848233933}, {"from": "AIV", "to": "KIM", "width": 0.8469046523325854}, {"from": "AIV", "to": "PLD", "width": 0.8413784107752024}, {"from": "UDR", "to": "MAA", "width": 0.8404503059335918}, {"from": "UDR", "to": "KIM", "width": 0.8341551790477568}, {"from": "CCL", "to": "RCL", "width": 1}, {"from": "KIM", "to": "HST", "width": 0.8378136425292945}, {"from": "KIM", "to": "MAC", "width": 0.8353604946661184}, {"from": "PSA", "to": "HST", "width": 0.8368677097208705}, {"from": "PSA", "to": "VTR", "width": 0.8350796921479977}, {"from": "VTR", "to": "HCP", "width": 1}, {"from": "VTR", "to": "HCN", "width": 0.8524419205450571}, {"from": "BEN", "to": "TROW", "width": 1}, {"from": "HCP", "to": "HCN", "width": 0.83770442335616}, {"from": "BAC", "to": "JPM", "width": 1}, {"from": "ADI", "to": "LLTC", "width": 0.8580122109693812}, {"from": "ADI", "to": "TXN", "width": 0.8484212794920744}, {"from": "LLTC", "to": "MCHP", "width": 0.837099705559545}, {"from": "DHI", "to": "PHM", "width": 0.8485304071620108}, {"from": "COP", "to": "CVX", "width": 0.8459251101414621}, {"from": "MLM", "to": "VMC", "width": 0.8455835819618284}, {"from": "AFL", "to": "TMK", "width": 0.8443956221090946}, {"from": "TMK", "to": "PFG", "width": 0.8415389534286637}, {"from": "MET", "to": "PRU", "width": 0.8435211257716376}, {"from": "USB", "to": "WFC", "width": 0.8419291285494901}, {"from": "PFG", "to": "LNC", "width": 0.8351204913678433}, {"from": "KLAC", "to": "LRCX", "width": 0.838436723656592}, {"from": "COL", "to": "HON", "width": 0.8351306388536166}, {"from": "GD", "to": "NOC", "width": 0.834566680033102}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html><style>p { font-size: 20px; }</style>
+<p>{'Consumer Discretionary': 'lightred', 'Energy': 'green', 'Financials': 'orange', 'Industrials': 'magenta', 'Information Technology': 'yellow', 'Materials': 'brown', 'Real Estate': 'pink'}</p>

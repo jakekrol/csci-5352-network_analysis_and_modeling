@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "gray", "id": "CMS", "label": "CMS", "location": "Jackson, Michigan", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "DTE", "label": "DTE", "location": "Detroit, Michigan", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "XEL", "label": "XEL", "location": "Minneapolis, Minnesota", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "LNT", "label": "LNT", "location": "Madison, Wisconsin", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "ES", "label": "ES", "location": "Springfield, Massachusetts", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "SCG", "label": "SCG", "location": "Cayce, South Carolina", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "WEC", "label": "WEC", "location": "Milwaukee, Wisconsin", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "AEE", "label": "AEE", "location": "St. Louis, Missouri", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "PNW", "label": "PNW", "location": "Phoenix, Arizona", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "SO", "label": "SO", "location": "Atlanta, Georgia", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "NEE", "label": "NEE", "location": "Juno Beach, Florida", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "AEP", "label": "AEP", "location": "Columbus, Ohio", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "DUK", "label": "DUK", "location": "Charlotte, North Carolina", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "EIX", "label": "EIX", "location": "Rosemead, California", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "ED", "label": "ED", "location": "New York, New York", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "orange", "id": "KEY", "label": "KEY", "location": "Cleveland, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "RF", "label": "RF", "location": "Birmingham, Alabama", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "CMA", "label": "CMA", "location": "Dallas, Texas", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Regional Banks"}, {"color": "orange", "id": "HBAN", "label": "HBAN", "location": "Columbus, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "STI", "label": "STI", "location": "Atlanta, Georgia", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "PNC", "label": "PNC", "location": "Pittsburgh, Pennsylvania", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "FITB", "label": "FITB", "location": "Cincinnati, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "LNC", "label": "LNC", "location": "Radnor, Pennsylvania", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Multi-line Insurance"}, {"color": "orange", "id": "MET", "label": "MET", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Life \u0026 Health Insurance"}, {"color": "orange", "id": "PRU", "label": "PRU", "location": "Newark, New Jersey", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "AMP", "label": "AMP", "location": "Minneapolis, Minnesota", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Asset Management \u0026 Custody Banks"}, {"color": "orange", "id": "PFG", "label": "PFG", "location": "Des Moines, Iowa", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "UNM", "label": "UNM", "location": "Chattanooga, Tennessee", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "lightred", "id": "LEN", "label": "LEN", "location": "Miami, Florida", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Homebuilding"}, {"color": "lightred", "id": "PHM", "label": "PHM", "location": "Atlanta, Georgia", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Homebuilding"}, {"color": "lightred", "id": "DHI", "label": "DHI", "location": "Fort Worth, Texas", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Homebuilding"}, {"color": "green", "id": "HES", "label": "HES", "location": "New York, New York", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Integrated Oil \u0026 Gas"}, {"color": "green", "id": "MRO", "label": "MRO", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "APA", "label": "APA", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "CXO", "label": "CXO", "location": "Midland, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "COP", "label": "COP", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "DVN", "label": "DVN", "location": "Oklahoma City, Oklahoma", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "orange", "id": "AMG", "label": "AMG", "location": "Beverly, Massachusetts", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Asset Management \u0026 Custody Banks"}, {"color": "green", "id": "XEC", "label": "XEC", "location": "Denver, Colorado", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "PXD", "label": "PXD", "location": "Irving, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "EOG", "label": "EOG", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "yellow", "id": "ADI", "label": "ADI", "location": "Norwood, Massachusetts", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "yellow", "id": "LLTC", "label": "LLTC", "location": "Milpitas, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "yellow", "id": "TXN", "label": "TXN", "location": "Dallas, Texas", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "green", "id": "CVX", "label": "CVX", "location": "San Ramon, California", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Integrated Oil \u0026 Gas"}, {"color": "pink", "id": "HCN", "label": "HCN", "location": "Toledo, Ohio", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "HCP", "label": "HCP", "location": "Long Beach, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "pink", "id": "VTR", "label": "VTR", "location": "Chicago, Illinois", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "brown", "id": "MLM", "label": "MLM", "location": "Raleigh, North Carolina", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Construction Materials"}, {"color": "brown", "id": "VMC", "label": "VMC", "location": "Birmingham, Alabama", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Construction Materials"}, {"color": "pink", "id": "AVB", "label": "AVB", "location": "Arlington, Virginia[3]", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "pink", "id": "EQR", "label": "EQR", "location": "Chicago, Illinois", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "yellow", "id": "MA", "label": "MA", "location": "Harrison, New York", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "yellow", "id": "V", "label": "V", "location": "San Francisco, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "orange", "id": "BBT", "label": "BBT", "location": "Winston-Salem, North Carolina", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "magenta", "id": "DAL", "label": "DAL", "location": "Atlanta, Georgia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Airlines"}, {"color": "magenta", "id": "LUV", "label": "LUV", "location": "Dallas, Texas", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Airlines"}, {"color": "orange", "id": "USB", "label": "USB", "location": "Minneapolis, Minnesota", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "WFC", "label": "WFC", "location": "San Francisco, California", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "pink", "id": "ESS", "label": "ESS", "location": "Palo Alto, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "pink", "id": "UDR", "label": "UDR", "location": "Highlands Ranch, Colorado", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "magenta", "id": "CSX", "label": "CSX", "location": "Jacksonville, Florida", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Railroads"}, {"color": "magenta", "id": "NSC", "label": "NSC", "location": "Norfolk, Virginia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Railroads"}, {"color": "orange", "id": "BEN", "label": "BEN", "location": "San Mateo, California", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Asset Management \u0026 Custody Banks"}, {"color": "orange", "id": "BLK", "label": "BLK", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Asset Management \u0026 Custody Banks"}]);
+                  edges = new vis.DataSet([{"from": "CMS", "to": "DTE", "width": 1}, {"from": "CMS", "to": "XEL", "width": 1}, {"from": "CMS", "to": "LNT", "width": 1}, {"from": "CMS", "to": "ES", "width": 1}, {"from": "CMS", "to": "SCG", "width": 1}, {"from": "CMS", "to": "WEC", "width": 1}, {"from": "CMS", "to": "AEE", "width": 1}, {"from": "CMS", "to": "PNW", "width": 1}, {"from": "CMS", "to": "SO", "width": 0.8175443066825758}, {"from": "CMS", "to": "NEE", "width": 0.8161994744161598}, {"from": "CMS", "to": "AEP", "width": 0.8118519307974308}, {"from": "CMS", "to": "DUK", "width": 0.8079585506665637}, {"from": "DTE", "to": "LNT", "width": 1}, {"from": "DTE", "to": "XEL", "width": 1}, {"from": "DTE", "to": "ES", "width": 1}, {"from": "DTE", "to": "WEC", "width": 1}, {"from": "DTE", "to": "SCG", "width": 0.8218296443729263}, {"from": "DTE", "to": "AEP", "width": 0.815875271874969}, {"from": "DTE", "to": "AEE", "width": 0.815646642426142}, {"from": "DTE", "to": "EIX", "width": 0.8015954588002727}, {"from": "XEL", "to": "LNT", "width": 1}, {"from": "XEL", "to": "WEC", "width": 1}, {"from": "XEL", "to": "SCG", "width": 1}, {"from": "XEL", "to": "ES", "width": 1}, {"from": "XEL", "to": "AEP", "width": 1}, {"from": "XEL", "to": "SO", "width": 1}, {"from": "XEL", "to": "AEE", "width": 1}, {"from": "XEL", "to": "DUK", "width": 1}, {"from": "XEL", "to": "ED", "width": 0.8155402676384494}, {"from": "XEL", "to": "PNW", "width": 0.8124644170898969}, {"from": "KEY", "to": "RF", "width": 1}, {"from": "KEY", "to": "CMA", "width": 1}, {"from": "KEY", "to": "HBAN", "width": 1}, {"from": "KEY", "to": "STI", "width": 1}, {"from": "KEY", "to": "PNC", "width": 0.8146982900281712}, {"from": "RF", "to": "STI", "width": 1}, {"from": "RF", "to": "HBAN", "width": 1}, {"from": "RF", "to": "CMA", "width": 0.8098312849446607}, {"from": "RF", "to": "FITB", "width": 0.801086079088647}, {"from": "LNC", "to": "MET", "width": 1}, {"from": "LNC", "to": "PRU", "width": 1}, {"from": "LNC", "to": "AMP", "width": 1}, {"from": "LNC", "to": "PFG", "width": 0.8167694392810324}, {"from": "LNC", "to": "UNM", "width": 0.8094607232875498}, {"from": "MET", "to": "PRU", "width": 1}, {"from": "MET", "to": "PFG", "width": 1}, {"from": "MET", "to": "AMP", "width": 1}, {"from": "LNT", "to": "ES", "width": 1}, {"from": "LNT", "to": "SCG", "width": 1}, {"from": "LNT", "to": "WEC", "width": 1}, {"from": "LNT", "to": "AEP", "width": 1}, {"from": "LNT", "to": "PNW", "width": 0.8196920703860181}, {"from": "LNT", "to": "AEE", "width": 0.8095375471795654}, {"from": "PRU", "to": "PFG", "width": 0.8171880350387961}, {"from": "ES", "to": "AEP", "width": 1}, {"from": "ES", "to": "SCG", "width": 1}, {"from": "ES", "to": "SO", "width": 1}, {"from": "ES", "to": "WEC", "width": 1}, {"from": "ES", "to": "PNW", "width": 0.818431404411226}, {"from": "ES", "to": "DUK", "width": 0.8114406189251121}, {"from": "ES", "to": "AEE", "width": 0.8078544491334523}, {"from": "WEC", "to": "SCG", "width": 1}, {"from": "WEC", "to": "AEP", "width": 0.8011400310374205}, {"from": "WEC", "to": "DUK", "width": 0.7975326328004273}, {"from": "SCG", "to": "SO", "width": 1}, {"from": "SCG", "to": "AEE", "width": 0.8214608872994525}, {"from": "SCG", "to": "ED", "width": 0.8008903883746001}, {"from": "SCG", "to": "PNW", "width": 0.8002449428658368}, {"from": "LEN", "to": "PHM", "width": 1}, {"from": "LEN", "to": "DHI", "width": 1}, {"from": "AEP", "to": "DUK", "width": 0.8183407203112446}, {"from": "HES", "to": "MRO", "width": 1}, {"from": "HES", "to": "APA", "width": 1}, {"from": "HES", "to": "CXO", "width": 0.8162816837834774}, {"from": "HES", "to": "COP", "width": 0.8121836487499517}, {"from": "HES", "to": "DVN", "width": 0.8041410378382295}, {"from": "MRO", "to": "COP", "width": 0.8044391119768164}, {"from": "MRO", "to": "APA", "width": 0.7988214091903775}, {"from": "SO", "to": "DUK", "width": 0.819214388214318}, {"from": "SO", "to": "ED", "width": 0.8129526614437977}, {"from": "AMP", "to": "PFG", "width": 0.8105633897683631}, {"from": "AMP", "to": "AMG", "width": 0.8030035182491061}, {"from": "CXO", "to": "XEC", "width": 1}, {"from": "CXO", "to": "PXD", "width": 0.8201124674266753}, {"from": "CXO", "to": "EOG", "width": 0.8111022733939437}, {"from": "STI", "to": "PNC", "width": 0.7969461611049463}, {"from": "ADI", "to": "LLTC", "width": 1}, {"from": "ADI", "to": "TXN", "width": 0.81227340192541}, {"from": "COP", "to": "CVX", "width": 1}, {"from": "HCN", "to": "HCP", "width": 1}, {"from": "HCP", "to": "VTR", "width": 0.8126739104594946}, {"from": "MLM", "to": "VMC", "width": 0.8040223496393056}, {"from": "AVB", "to": "EQR", "width": 0.8029591599576084}, {"from": "MA", "to": "V", "width": 0.8013204318420242}, {"from": "FITB", "to": "BBT", "width": 0.7992562613762777}, {"from": "DAL", "to": "LUV", "width": 0.8000669266086923}, {"from": "USB", "to": "WFC", "width": 0.7996116318993659}, {"from": "ESS", "to": "UDR", "width": 0.799135149830683}, {"from": "CSX", "to": "NSC", "width": 0.798263825770247}, {"from": "BEN", "to": "BLK", "width": 0.7972943509430948}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html><style>p { font-size: 20px; }</style>
+<p>{'Consumer Discretionary': 'lightred', 'Energy': 'green', 'Financials': 'orange', 'Industrials': 'magenta', 'Information Technology': 'yellow', 'Materials': 'brown', 'Real Estate': 'pink', 'Utilities': 'gray'}</p>

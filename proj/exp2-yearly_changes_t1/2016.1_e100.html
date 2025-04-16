@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "gray", "id": "CMS", "label": "CMS", "location": "Jackson, Michigan", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "XEL", "label": "XEL", "location": "Minneapolis, Minnesota", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "WEC", "label": "WEC", "location": "Milwaukee, Wisconsin", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "DTE", "label": "DTE", "location": "Detroit, Michigan", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "ES", "label": "ES", "location": "Springfield, Massachusetts", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "LNT", "label": "LNT", "location": "Madison, Wisconsin", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "SCG", "label": "SCG", "location": "Cayce, South Carolina", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "PNW", "label": "PNW", "location": "Phoenix, Arizona", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "AEP", "label": "AEP", "location": "Columbus, Ohio", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "ED", "label": "ED", "location": "New York, New York", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "DUK", "label": "DUK", "location": "Charlotte, North Carolina", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "orange", "id": "LNC", "label": "LNC", "location": "Radnor, Pennsylvania", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Multi-line Insurance"}, {"color": "orange", "id": "PRU", "label": "PRU", "location": "Newark, New Jersey", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "UNM", "label": "UNM", "location": "Chattanooga, Tennessee", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "MET", "label": "MET", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Life \u0026 Health Insurance"}, {"color": "orange", "id": "C", "label": "C", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "BAC", "label": "BAC", "location": "Charlotte, North Carolina", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "JPM", "label": "JPM", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "NTRS", "label": "NTRS", "location": "Chicago, Illinois", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Asset Management \u0026 Custody Banks"}, {"color": "orange", "id": "RF", "label": "RF", "location": "Birmingham, Alabama", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "orange", "id": "PNC", "label": "PNC", "location": "Pittsburgh, Pennsylvania", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "STI", "label": "STI", "location": "Atlanta, Georgia", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "FITB", "label": "FITB", "location": "Cincinnati, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "BBT", "label": "BBT", "location": "Winston-Salem, North Carolina", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "GS", "label": "GS", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Investment Banking \u0026 Brokerage"}, {"color": "orange", "id": "USB", "label": "USB", "location": "Minneapolis, Minnesota", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "MTB", "label": "MTB", "location": "Buffalo, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "KEY", "label": "KEY", "location": "Cleveland, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "ZION", "label": "ZION", "location": "Salt Lake City, Utah", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Regional Banks"}, {"color": "orange", "id": "CMA", "label": "CMA", "location": "Dallas, Texas", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Regional Banks"}, {"color": "brown", "id": "DD", "label": "DD", "location": "Wilmington, Delaware", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Diversified Chemicals"}, {"color": "brown", "id": "DOW", "label": "DOW", "location": "Midland, Michigan", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Diversified Chemicals"}, {"color": "orange", "id": "BK", "label": "BK", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "lightred", "id": "DHI", "label": "DHI", "location": "Fort Worth, Texas", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Homebuilding"}, {"color": "lightred", "id": "LEN", "label": "LEN", "location": "Miami, Florida", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Homebuilding"}, {"color": "orange", "id": "ETFC", "label": "ETFC", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Investment Banking \u0026 Brokerage"}, {"color": "orange", "id": "SCHW", "label": "SCHW", "location": "San Francisco, California", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Investment Banking \u0026 Brokerage"}, {"color": "yellow", "id": "MA", "label": "MA", "location": "Harrison, New York", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "yellow", "id": "V", "label": "V", "location": "San Francisco, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}]);
+                  edges = new vis.DataSet([{"from": "CMS", "to": "XEL", "width": 1}, {"from": "CMS", "to": "WEC", "width": 1}, {"from": "CMS", "to": "DTE", "width": 1}, {"from": "CMS", "to": "ES", "width": 1}, {"from": "CMS", "to": "LNT", "width": 1}, {"from": "CMS", "to": "SCG", "width": 1}, {"from": "CMS", "to": "PNW", "width": 0.8788930330632105}, {"from": "CMS", "to": "AEP", "width": 0.8781310299973643}, {"from": "CMS", "to": "ED", "width": 0.8758865636724035}, {"from": "XEL", "to": "WEC", "width": 1}, {"from": "XEL", "to": "AEP", "width": 1}, {"from": "XEL", "to": "LNT", "width": 1}, {"from": "XEL", "to": "ES", "width": 1}, {"from": "XEL", "to": "SCG", "width": 1}, {"from": "XEL", "to": "PNW", "width": 0.8830389620525544}, {"from": "XEL", "to": "DTE", "width": 0.8829895425289912}, {"from": "XEL", "to": "ED", "width": 0.8812469149656884}, {"from": "XEL", "to": "DUK", "width": 0.8687930731375276}, {"from": "LNC", "to": "PRU", "width": 1}, {"from": "LNC", "to": "UNM", "width": 1}, {"from": "LNC", "to": "MET", "width": 0.8691152248216549}, {"from": "PRU", "to": "UNM", "width": 1}, {"from": "PRU", "to": "MET", "width": 0.8804628096160422}, {"from": "PRU", "to": "C", "width": 0.8696985240228765}, {"from": "WEC", "to": "ED", "width": 1}, {"from": "WEC", "to": "ES", "width": 1}, {"from": "WEC", "to": "DTE", "width": 1}, {"from": "WEC", "to": "SCG", "width": 1}, {"from": "WEC", "to": "LNT", "width": 1}, {"from": "WEC", "to": "AEP", "width": 0.8807917565229655}, {"from": "WEC", "to": "DUK", "width": 0.880100519450374}, {"from": "WEC", "to": "PNW", "width": 0.8724538216139743}, {"from": "BAC", "to": "C", "width": 1}, {"from": "BAC", "to": "JPM", "width": 1}, {"from": "BAC", "to": "NTRS", "width": 1}, {"from": "BAC", "to": "RF", "width": 0.8752335509204622}, {"from": "BAC", "to": "PNC", "width": 0.8715292295245396}, {"from": "BAC", "to": "STI", "width": 0.8710856090808736}, {"from": "BAC", "to": "FITB", "width": 0.8701770056790644}, {"from": "BAC", "to": "BBT", "width": 0.8692918038611329}, {"from": "C", "to": "JPM", "width": 1}, {"from": "C", "to": "NTRS", "width": 0.8814708787481961}, {"from": "C", "to": "GS", "width": 0.8743319478136446}, {"from": "C", "to": "BBT", "width": 0.872045451380679}, {"from": "C", "to": "RF", "width": 0.8711924469371272}, {"from": "JPM", "to": "USB", "width": 1}, {"from": "JPM", "to": "NTRS", "width": 0.8713961115653525}, {"from": "JPM", "to": "RF", "width": 0.8710393802979568}, {"from": "JPM", "to": "GS", "width": 0.8690947987696306}, {"from": "JPM", "to": "PNC", "width": 0.8690075312105149}, {"from": "BBT", "to": "FITB", "width": 1}, {"from": "BBT", "to": "PNC", "width": 1}, {"from": "BBT", "to": "STI", "width": 1}, {"from": "BBT", "to": "USB", "width": 1}, {"from": "BBT", "to": "MTB", "width": 1}, {"from": "BBT", "to": "RF", "width": 0.8815535042736893}, {"from": "BBT", "to": "NTRS", "width": 0.8794106957810518}, {"from": "BBT", "to": "KEY", "width": 0.8686568943191392}, {"from": "FITB", "to": "RF", "width": 1}, {"from": "FITB", "to": "STI", "width": 1}, {"from": "FITB", "to": "ZION", "width": 1}, {"from": "FITB", "to": "PNC", "width": 1}, {"from": "FITB", "to": "USB", "width": 0.8836691741490488}, {"from": "FITB", "to": "KEY", "width": 0.8815391067648738}, {"from": "FITB", "to": "MTB", "width": 0.873890625390162}, {"from": "FITB", "to": "NTRS", "width": 0.8708766012290508}, {"from": "FITB", "to": "CMA", "width": 0.8687802152321116}, {"from": "RF", "to": "ZION", "width": 1}, {"from": "RF", "to": "STI", "width": 1}, {"from": "RF", "to": "PNC", "width": 1}, {"from": "RF", "to": "KEY", "width": 1}, {"from": "RF", "to": "CMA", "width": 0.8794266972068218}, {"from": "RF", "to": "NTRS", "width": 0.8711576593176303}, {"from": "ZION", "to": "CMA", "width": 1}, {"from": "ZION", "to": "PNC", "width": 0.8747176254599744}, {"from": "ZION", "to": "STI", "width": 0.86913029897948}, {"from": "PNC", "to": "USB", "width": 1}, {"from": "PNC", "to": "STI", "width": 0.8714428169437726}, {"from": "AEP", "to": "PNW", "width": 1}, {"from": "AEP", "to": "ES", "width": 1}, {"from": "AEP", "to": "DUK", "width": 1}, {"from": "AEP", "to": "LNT", "width": 0.876563936118462}, {"from": "AEP", "to": "SCG", "width": 0.8703175011112891}, {"from": "AEP", "to": "DTE", "width": 0.8686490435471304}, {"from": "PNW", "to": "SCG", "width": 1}, {"from": "PNW", "to": "ES", "width": 1}, {"from": "PNW", "to": "LNT", "width": 0.8767696245920378}, {"from": "PNW", "to": "DUK", "width": 0.8718240772147291}, {"from": "DD", "to": "DOW", "width": 1}, {"from": "ES", "to": "DTE", "width": 1}, {"from": "ES", "to": "SCG", "width": 0.8827286073257207}, {"from": "ES", "to": "LNT", "width": 0.8781158166585219}, {"from": "DTE", "to": "SCG", "width": 1}, {"from": "DTE", "to": "LNT", "width": 0.8743163588255877}, {"from": "SCG", "to": "LNT", "width": 1}, {"from": "USB", "to": "MTB", "width": 1}, {"from": "NTRS", "to": "BK", "width": 0.8790140927416317}, {"from": "DHI", "to": "LEN", "width": 1}, {"from": "ETFC", "to": "SCHW", "width": 0.8802266163267717}, {"from": "MA", "to": "V", "width": 0.8707568497576179}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html><style>p { font-size: 20px; }</style>
+<p>{'Consumer Discretionary': 'lightred', 'Financials': 'orange', 'Information Technology': 'yellow', 'Materials': 'brown', 'Utilities': 'gray'}</p>

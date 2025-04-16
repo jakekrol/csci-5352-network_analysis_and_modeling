@@ -11,6 +11,7 @@ import argparse
 import numpy as np
 import itertools
 import random
+import copy
 
 parser = argparse.ArgumentParser(description='Rank to Graph')
 parser.add_argument('--input', '-i', type=str, required=True, help='input rank file')
@@ -19,6 +20,7 @@ parser.add_argument('--rand', '-r', action='store_true', help='randomize edges')
 parser.add_argument('--plot', '-p', action='store_true', help='plot graph')
 parser.add_argument('--out', '-o', type=str, required=True, help='output pattern')
 parser.add_argument('--steps', '-s', type=str, help='comma-separated set of edge integers to plot at')
+parser.add_argument('--keep', '-k', action='store_true', help='keep singleton nodes')
 args = parser.parse_args()
 
 # meta
@@ -111,7 +113,7 @@ def plotg(g, out, color=False):
 
 def g2stats(g, partition):
     # stats: mean degree, clustering coefficient, modularity, diameter, number of components, size LCC
-    mean_k = sum(dict(g.degree()).values()) / g.number_of_nodes()
+    mean_deg = sum(dict(g.degree()).values()) / g.number_of_nodes()
     C = nx.transitivity(g)
     lcc = max(nx.connected_components(g), key=len)
     n_lcc = len(lcc)
@@ -119,14 +121,60 @@ def g2stats(g, partition):
     n_components = nx.number_connected_components(g)
     # diameter w.r.t largest connected component
     diameter = nx.diameter(g.subgraph(lcc))
-    mod = nx.community.modularity(g, partition)
-    return {'mean_deg':mean_k, 'C':C, 'n_lcc':n_lcc, 'diameter':diameter, 'n_comp':n_components, 'modularity':mod}
+    # just use the modularity from no --keep flag
+    # it's the same
+    # so is C, so we don't bother here
+    if args.keep:
+        mod = 0
+    else:
+        mod = nx.community.modularity(g, partition)
+    return {'mean_deg':mean_deg, 'C':C, 'n_lcc':n_lcc, 'diameter':diameter, 'n_comp':n_components, 'modularity':mod}
+
+def update_g(g, partition, sym1, sym2):
+    '''
+    add nodes with data, edge, and update partition
+    '''
+    g_p = g.copy()
+    p = copy.deepcopy(partition)
+    if not g_p.has_node(sym1):
+        d = get_node_meta(sym1)
+        g_p.add_node(sym1)
+        for key in d:
+            g_p.nodes[sym1][key] = d[key]
+            if key == 'sector':
+                sector = d[key]
+                p[sector].add(sym1)
+    if not g_p.has_node(sym2):
+        d = get_node_meta(sym2)
+        g_p.add_node(sym2)
+        for key in d:
+            g_p.nodes[sym2][key] = d[key]
+            if key == 'sector':
+                sector = d[key]
+                p[sector].add(sym2)
+    g_p.add_edge(sym1,sym2)
+    return g_p, p
+
 
 def rank2g(df, m, output_pattern, steps):
     if 'cor' not in df.columns:
         raise ValueError('input looks like a correlation table, not a rank table. please provide a rank table instead')
+    # add all nodes
+    if args.keep:
+        # add all nodes to graph
+        nodes = set()
+        for i,row in df.iterrows():
+            nodes.add(row['sym1'])
+            nodes.add(row['sym2'])
+        g = nx.Graph()
+        for node in nodes:
+            d = get_node_meta(node)
+            g.add_node(node)
+            for key in d:
+                g.nodes[node][key] = d[key]
+    else:
+        g = nx.Graph()
     df = df.sort_values(by='cor', ascending=False) # sort by correlation
-    g = nx.Graph()
     ms = []
     mean_degs = []
     Cs = []
@@ -140,50 +188,21 @@ def rank2g(df, m, output_pattern, steps):
             break
         sym1 = row['sym1']
         sym2 = row['sym2']
-        # nodes
-        if not g.has_node(sym1):
-            d = get_node_meta(sym1)
-            g.add_node(sym1)
-            for key in d:
-                g.nodes[sym1][key] = d[key]
-                if key == 'sector':
-                    sector = d[key]
-                    partition[sector].add(sym1)
-        if not g.has_node(sym2):
-            d = get_node_meta(sym2)
-            g.add_node(sym2)
-            for key in d:
-                g.nodes[sym2][key] = d[key]
-                if key == 'sector':
-                    sector = d[key]
-                    partition[sector].add(sym2)
-        # do list of sets instead of dict
+        g, partition = update_g(g, partition, sym1, sym2)
+        # do list of sets instead of dict for modularity computation
         p = []
         for k,v in partition.items():
             if len(v) > 0:
                 p.append(v)
-        # edges
-        cor = row['cor']
-        g.add_edge(sym1,sym2, weight = cor)
         # compute statistics
-        mean_deg = sum(dict(g.degree()).values()) / g.number_of_nodes()
-        C = nx.transitivity(g)
-        lcc = max(nx.connected_components(g), key=len)
-        n_lcc = len(lcc)
-        n_components = nx.number_connected_components(g)
-        # diameter w.r.t largest connected component
-        if n_lcc > 1:
-            diameter = nx.diameter(g.subgraph(lcc))
-        else:
-            diameter = 0
-        mod = nx.community.modularity(g, p)
+        stats = g2stats(g, p)
         ms.append(i+1)
-        mean_degs.append(mean_deg)
-        Cs.append(C)
-        n_lccs.append(n_lcc)
-        diameters.append(diameter)
-        n_comp.append(n_components)
-        mods.append(mod)
+        mean_degs.append(stats['mean_deg'])
+        Cs.append(stats['C'])
+        n_lccs.append(stats['n_lcc'])
+        diameters.append(stats['diameter'])
+        n_comp.append(stats['n_comp'])
+        mods.append(stats['modularity'])
         # plot
         if args.plot:
             if i+1 in steps:
@@ -199,11 +218,23 @@ def rank2g(df, m, output_pattern, steps):
 def cor2g_rand(df, m, output_pattern, steps, seed = 0):
     if 'cor' in df.columns:
         raise ValueError('input looks like a rank table, not a correlation table. please provide a correlation table instead')
+    if args.keep:
+        # add all nodes to graph
+        nodes = set()
+        for u in df.index:
+            nodes.add(u)
+        g = nx.Graph()
+        for node in nodes:
+            d = get_node_meta(node)
+            g.add_node(node)
+            for key in d:
+                g.nodes[node][key] = d[key]
+    else:
+        g = nx.Graph()
     random.seed(seed)
     symbols = sorted(list(df.index)) # sorting ensures combinations are in same order for different runs
     comb = list(itertools.combinations(symbols, 2)) # symbols combinations
     print(comb[:5])
-    g = nx.Graph()
     ms = []
     mean_degs = []
     Cs = []
@@ -217,50 +248,21 @@ def cor2g_rand(df, m, output_pattern, steps, seed = 0):
             break
         sym1, sym2 = random.choice(comb) # sample symbols
         comb.remove((sym1, sym2)) # rm symbol from consideration
-        # nodes
-        if not g.has_node(sym1):
-            d = get_node_meta(sym1)
-            g.add_node(sym1)
-            for key in d:
-                g.nodes[sym1][key] = d[key]
-                if key == 'sector':
-                    sector = d[key]
-                    partition[sector].add(sym1)
-        if not g.has_node(sym2):
-            d = get_node_meta(sym2)
-            g.add_node(sym2)
-            for key in d:
-                g.nodes[sym2][key] = d[key]
-                if key == 'sector':
-                    sector = d[key]
-                    partition[sector].add(sym2)
+        g, partition = update_g(g, partition, sym1, sym2)
         # do list of sets instead of dict
         p = []
         for k,v in partition.items():
             if len(v) > 0:
                 p.append(v)
-        # edges
-        cor = df.loc[sym1,sym2]
-        g.add_edge(sym1,sym2, weight = cor)
         # compute statistics
-        mean_deg = sum(dict(g.degree()).values()) / g.number_of_nodes()
-        C = nx.transitivity(g)
-        lcc = max(nx.connected_components(g), key=len)
-        n_lcc = len(lcc)
-        n_components = nx.number_connected_components(g)
-        # diameter w.r.t largest connected component
-        if n_lcc > 1:
-            diameter = nx.diameter(g.subgraph(lcc))
-        else:
-            diameter = 0
-        mod = nx.community.modularity(g, p)
+        stats = g2stats(g, p)
         ms.append(i+1)
-        mean_degs.append(mean_deg)
-        Cs.append(C)
-        n_lccs.append(n_lcc)
-        diameters.append(diameter)
-        n_comp.append(n_components)
-        mods.append(mod)
+        mean_degs.append(stats['mean_deg'])
+        Cs.append(stats['C'])
+        n_lccs.append(stats['n_lcc'])
+        diameters.append(stats['diameter'])
+        n_comp.append(stats['n_comp'])
+        mods.append(stats['modularity'])
         # plot
         if args.plot:
             if i+1 in steps:
@@ -273,17 +275,6 @@ def cor2g_rand(df, m, output_pattern, steps, seed = 0):
     return g, stats
 
 def main():
-    # set node communities by sector
-    # partition={k:[] for k in cmap.keys()} 
-    # with open(SYMBOLS) as f:
-    #     for line in f:
-    #         s = line.strip()
-    #         sector = get_node_meta(s)['sector']
-    #         if sector in cmap.keys():
-    #             partition[sector].append(s)
-    #         else:
-    #             raise ValueError(f'symbol {s} not found in cmap')
-    # graphs
     if args.rand:
         df = pd.read_csv(args.input, index_col=0) # read corr
         print('generating random graphs')
@@ -291,7 +282,7 @@ def main():
         stats.to_csv(f'{args.out}_stats.tsv', index=False, sep ='\t')
     else:
         df = pd.read_csv(args.input) # read rank
-        print('generating graphs')
+        print('constructing graphs')
         _, stats = rank2g(df, args.m, args.out, args.steps)
         stats.to_csv(f'{args.out}_stats.tsv', index=False, sep ='\t')
     print('done')
