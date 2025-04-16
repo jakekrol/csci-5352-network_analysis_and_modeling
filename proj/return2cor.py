@@ -12,4 +12,4 @@ args= parser.parse_args()
 
 df_return = pd.read_csv(args.input)
 cor = df_return.corr(method='pearson')
-cor.to_csv(args.output)
+cor.to_csv(args.output, index=True)

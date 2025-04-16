@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import argparse
 
-# input data matrix
+# input log return matrix
 # output shuffled data matrix
 
 # args

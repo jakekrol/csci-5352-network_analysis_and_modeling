@@ -83,7 +83,12 @@ def get_node_meta(symbol,df_node_meta=df_node_meta):
         print(e)
         print(f'symbol " {symbol} " not found in node meta')
         return {'sector': None,'subsector':None,'location':None}
-    sect = row['GICS Sector'].values[0]
+    try:
+        sect = row['GICS Sector'].values[0]
+    except IndexError as e:
+        print(e)
+        print(f'symbol " {symbol} " not found in node meta')
+        sys.exit()
     subsect = row['GICS Sub Industry'].values[0]
     location = row['Address of Headquarters'].values[0]
     d['sector'] = sect
