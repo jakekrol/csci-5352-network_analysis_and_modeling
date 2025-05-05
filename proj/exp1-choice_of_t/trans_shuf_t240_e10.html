@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "magenta", "id": "PNR", "label": "PNR", "location": "Worsley, UK", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Machinery"}, {"color": "pink", "id": "UDR", "label": "UDR", "location": "Highlands Ranch, Colorado", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "lightblue", "id": "CHD", "label": "CHD", "location": "Ewing, New Jersey", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Household Products"}, {"color": "lightred", "id": "ULTA", "label": "ULTA", "location": "Bolingbrook, Illinois", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Specialty Stores"}, {"color": "yellow", "id": "ACN", "label": "ACN", "location": "Dublin, Ireland", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "IT Consulting \u0026 Other Services"}, {"color": "orange", "id": "STT", "label": "STT", "location": "Boston, Massachusetts", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "lightblue", "id": "TAP", "label": "TAP", "location": "Denver, Colorado", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Brewers"}, {"color": "lightred", "id": "URBN", "label": "URBN", "location": "Philadelphia, Pennsylvania", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel Retail"}, {"color": "cyan", "id": "ABC", "label": "ABC", "location": "Chesterbrook, Pennsylvania", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Distributors"}, {"color": "cyan", "id": "HSIC", "label": "HSIC", "location": "Melville, New York", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Distributors"}, {"color": "yellow", "id": "IBM", "label": "IBM", "location": "Armonk, New York", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "IT Consulting \u0026 Other Services"}, {"color": "gray", "id": "NRG", "label": "NRG", "location": "Princeton, New Jersey", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Independent Power Producers \u0026 Energy Traders"}, {"color": "cyan", "id": "BDX", "label": "BDX", "location": "Franklin Lakes, New Jersey", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Equipment"}, {"color": "green", "id": "CVX", "label": "CVX", "location": "San Ramon, California", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Integrated Oil \u0026 Gas"}, {"color": "cyan", "id": "DVA", "label": "DVA", "location": "Denver, Colorado", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Facilities"}, {"color": "cyan", "id": "HOLX", "label": "HOLX", "location": "Marlborough, Massachusetts", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Equipment"}, {"color": "cyan", "id": "ANTM", "label": "ANTM", "location": "Indianapolis, Indiana", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Managed Health Care"}, {"color": "gray", "id": "D", "label": "D", "location": "Richmond, Virginia", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "green", "id": "APA", "label": "APA", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "gray", "id": "PPL", "label": "PPL", "location": "Allentown, Pennsylvania", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}]);
+                  edges = new vis.DataSet([{"from": "PNR", "to": "UDR", "width": 1}, {"from": "CHD", "to": "ULTA", "width": 1}, {"from": "ACN", "to": "STT", "width": 1}, {"from": "TAP", "to": "URBN", "width": 1}, {"from": "ABC", "to": "HSIC", "width": 1}, {"from": "IBM", "to": "NRG", "width": 1}, {"from": "BDX", "to": "CVX", "width": 1}, {"from": "DVA", "to": "HOLX", "width": 1}, {"from": "ANTM", "to": "D", "width": 1}, {"from": "APA", "to": "PPL", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html><style>p { font-size: 20px; }</style>
+<p>{'Consumer Discretionary': 'lightred', 'Consumer Staples': 'lightblue', 'Energy': 'green', 'Financials': 'orange', 'Health Care': 'cyan', 'Industrials': 'magenta', 'Information Technology': 'yellow', 'Real Estate': 'pink', 'Utilities': 'gray'}</p>

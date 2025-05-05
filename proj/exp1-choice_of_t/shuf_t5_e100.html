@@ -1,0 +1,251 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "lightred", "id": "GT", "label": "GT", "location": "Akron, Ohio", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Tires \u0026 Rubber"}, {"color": "gray", "id": "PPL", "label": "PPL", "location": "Allentown, Pennsylvania", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "green", "id": "SLB", "label": "SLB", "location": "Cura\u00e7ao, Kingdom of the Netherlands", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Equipment \u0026 Services"}, {"color": "brown", "id": "SEE", "label": "SEE", "location": "Elmwood Park, New Jersey", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Paper Packaging"}, {"color": "lightred", "id": "ROST", "label": "ROST", "location": "Pleasanton, California", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel Retail"}, {"color": "magenta", "id": "TXT", "label": "TXT", "location": "Providence, Rhode Island", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "yellow", "id": "EA", "label": "EA", "location": "Redwood City, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Home Entertainment Software"}, {"color": "orange", "id": "AFL", "label": "AFL", "location": "Columbus, Georgia", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Life \u0026 Health Insurance"}, {"color": "yellow", "id": "SYMC", "label": "SYMC", "location": "Mountain View, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Application Software"}, {"color": "yellow", "id": "V", "label": "V", "location": "San Francisco, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "orange", "id": "GS", "label": "GS", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Investment Banking \u0026 Brokerage"}, {"color": "yellow", "id": "MSFT", "label": "MSFT", "location": "Redmond, Washington", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Systems Software"}, {"color": "lightblue", "id": "CAG", "label": "CAG", "location": "Omaha, Nebraska", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "green", "id": "NOV", "label": "NOV", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Equipment \u0026 Services"}, {"color": "yellow", "id": "ACN", "label": "ACN", "location": "Dublin, Ireland", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "IT Consulting \u0026 Other Services"}, {"color": "lightred", "id": "F", "label": "F", "location": "Dearborn, Michigan", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Automobile Manufacturers"}, {"color": "orange", "id": "BK", "label": "BK", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "lightblue", "id": "TSN", "label": "TSN", "location": "Springdale, Arkansas", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "yellow", "id": "MCHP", "label": "MCHP", "location": "Chandler, Arizona", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "lightred", "id": "VFC", "label": "VFC", "location": "Greensboro, North Carolina", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel, Accessories \u0026 Luxury Goods"}, {"color": "gray", "id": "ES", "label": "ES", "location": "Springfield, Massachusetts", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "magenta", "id": "GWW", "label": "GWW", "location": "Lake Forest, Illinois", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Materials"}, {"color": "orange", "id": "PNC", "label": "PNC", "location": "Pittsburgh, Pennsylvania", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "green", "id": "HP", "label": "HP", "location": "Tulsa, Oklahoma[5]", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Drilling"}, {"color": "orange", "id": "TRV", "label": "TRV", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Property \u0026 Casualty Insurance"}, {"color": "brown", "id": "FCX", "label": "FCX", "location": "Phoenix, Arizona", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Copper"}, {"color": "yellow", "id": "INTC", "label": "INTC", "location": "Santa Clara, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "magenta", "id": "CTAS", "label": "CTAS", "location": "Mason, Ohio", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Diversified Support Services"}, {"color": "yellow", "id": "NFLX", "label": "NFLX", "location": "Los Gatos, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "lightblue", "id": "TAP", "label": "TAP", "location": "Denver, Colorado", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Brewers"}, {"color": "green", "id": "MUR", "label": "MUR", "location": "El Dorado, Arkansas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Integrated Oil \u0026 Gas"}, {"color": "teal", "id": "VZ", "label": "VZ", "location": "New York, New York", "sector": "Telecommunications Services", "shape": "dot", "size": 10, "subsector": "Integrated Telecommunications Services"}, {"color": "gray", "id": "CMS", "label": "CMS", "location": "Jackson, Michigan", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "magenta", "id": "EXPD", "label": "EXPD", "location": "Seattle, Washington", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Air Freight \u0026 Logistics"}, {"color": "gray", "id": "D", "label": "D", "location": "Richmond, Virginia", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "lightred", "id": "IPG", "label": "IPG", "location": "New York, New York", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Advertising"}, {"color": "cyan", "id": "JNJ", "label": "JNJ", "location": "New Brunswick, New Jersey", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Equipment"}, {"color": "lightred", "id": "LB", "label": "LB", "location": "Columbus, Ohio", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel Retail"}, {"color": "orange", "id": "PBCT", "label": "PBCT", "location": "Bridgeport, Connecticut", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Thrifts \u0026 Mortgage Finance"}, {"color": "lightblue", "id": "RAI", "label": "RAI", "location": "Winston-Salem, North Carolina", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Tobacco"}, {"color": "yellow", "id": "QCOM", "label": "QCOM", "location": "San Diego, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "magenta", "id": "UPS", "label": "UPS", "location": "Atlanta, Georgia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Air Freight \u0026 Logistics"}, {"color": "cyan", "id": "A", "label": "A", "location": "Santa Clara, California", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Equipment"}, {"color": "lightred", "id": "AN", "label": "AN", "location": "Fort Lauderdale, Florida", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Specialty Stores"}, {"color": "cyan", "id": "BSX", "label": "BSX", "location": "Marlborough, Massachusetts[4]", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Equipment"}, {"color": "gray", "id": "FE", "label": "FE", "location": "Akron, Ohio", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "green", "id": "MRO", "label": "MRO", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "NBL", "label": "NBL", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "orange", "id": "NDAQ", "label": "NDAQ", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "cyan", "id": "CERN", "label": "CERN", "location": "North Kansas City, Missouri", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Technology"}, {"color": "cyan", "id": "COO", "label": "COO", "location": "Pleasanton, California", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Supplies"}, {"color": "yellow", "id": "ATVI", "label": "ATVI", "location": "Santa Monica, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Home Entertainment Software"}, {"color": "green", "id": "TSO", "label": "TSO", "location": "San Antonio, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Refining \u0026 Marketing \u0026 Transportation"}, {"color": "lightred", "id": "DLTR", "label": "DLTR", "location": "Chesapeake, Virginia", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "General Merchandise Stores"}, {"color": "lightred", "id": "FL", "label": "FL", "location": "New York, New York", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel Retail"}, {"color": "magenta", "id": "UNP", "label": "UNP", "location": "Omaha, Nebraska", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Railroads"}, {"color": "yellow", "id": "WDC", "label": "WDC", "location": "Irvine, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Computer Storage \u0026 Peripherals"}, {"color": "magenta", "id": "RSG", "label": "RSG", "location": "Phoenix, Arizona", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "pink", "id": "UDR", "label": "UDR", "location": "Highlands Ranch, Colorado", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "Residential REITs"}, {"color": "brown", "id": "FMC", "label": "FMC", "location": "Philadelphia, Pennsylvania", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Diversified Chemicals"}, {"color": "magenta", "id": "UTX", "label": "UTX", "location": "Hartford, Connecticut", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "green", "id": "OKE", "label": "OKE", "location": "Tulsa, Oklahoma", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "green", "id": "SWN", "label": "SWN", "location": "Houston, Texas[6]", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "lightred", "id": "HD", "label": "HD", "location": "Atlanta, Georgia", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Home Improvement Retail"}, {"color": "magenta", "id": "LLL", "label": "LLL", "location": "New York, New York", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "brown", "id": "IFF", "label": "IFF", "location": "New York, New York", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Specialty Chemicals"}, {"color": "cyan", "id": "AGN", "label": "AGN", "location": "Dublin, Ireland", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Pharmaceuticals"}, {"color": "green", "id": "FTI", "label": "FTI", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Equipment \u0026 Services"}, {"color": "cyan", "id": "BCR", "label": "BCR", "location": "Murray Hill, New Jersey", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Equipment"}, {"color": "lightblue", "id": "MO", "label": "MO", "location": "Richmond, Virginia", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Tobacco"}, {"color": "magenta", "id": "DAL", "label": "DAL", "location": "Atlanta, Georgia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Airlines"}, {"color": "orange", "id": "NTRS", "label": "NTRS", "location": "Chicago, Illinois", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Asset Management \u0026 Custody Banks"}, {"color": "lightred", "id": "CMCSA", "label": "CMCSA", "location": "Philadelphia, Pennsylvania", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Cable \u0026 Satellite"}, {"color": "lightblue", "id": "MNST", "label": "MNST", "location": "Corona, California", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Soft Drinks"}, {"color": "green", "id": "RRC", "label": "RRC", "location": "Fort Worth, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "lightred", "id": "TGNA", "label": "TGNA", "location": "McLean, Virginia", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Publishing"}, {"color": "brown", "id": "AVY", "label": "AVY", "location": "Glendale, California", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Paper Packaging"}, {"color": "cyan", "id": "MYL", "label": "MYL", "location": "Amsterdam, Netherlands", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Pharmaceuticals"}, {"color": "yellow", "id": "FISV", "label": "FISV", "location": "Brookfield, Wisconsin", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "orange", "id": "LUK", "label": "LUK", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Multi-Sector Holdings"}, {"color": "brown", "id": "CF", "label": "CF", "location": "Deerfield, Illinois", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Fertilizers \u0026 Agricultural Chemicals"}, {"color": "orange", "id": "STT", "label": "STT", "location": "Boston, Massachusetts", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "teal", "id": "CTL", "label": "CTL", "location": "Monroe, Louisiana", "sector": "Telecommunications Services", "shape": "dot", "size": 10, "subsector": "Integrated Telecommunications Services"}, {"color": "yellow", "id": "PAYX", "label": "PAYX", "location": "Penfield, New York", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "pink", "id": "EQIX", "label": "EQIX", "location": "Redwood City, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "yellow", "id": "ADI", "label": "ADI", "location": "Norwood, Massachusetts", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "brown", "id": "MLM", "label": "MLM", "location": "Raleigh, North Carolina", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Construction Materials"}, {"color": "cyan", "id": "DGX", "label": "DGX", "location": "Madison, New Jersey", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Facilities"}, {"color": "pink", "id": "HCN", "label": "HCN", "location": "Toledo, Ohio", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "lightblue", "id": "K", "label": "K", "location": "Battle Creek, Michigan", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "yellow", "id": "RHT", "label": "RHT", "location": "Raleigh, North Carolina", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Systems Software"}, {"color": "green", "id": "XEC", "label": "XEC", "location": "Denver, Colorado", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "orange", "id": "KEY", "label": "KEY", "location": "Cleveland, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "lightred", "id": "DIS", "label": "DIS", "location": "Burbank, California", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Broadcasting \u0026 Cable TV"}, {"color": "lightred", "id": "TGT", "label": "TGT", "location": "Minneapolis, Minnesota", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "General Merchandise Stores"}, {"color": "green", "id": "APC", "label": "APC", "location": "The Woodlands, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "magenta", "id": "ROP", "label": "ROP", "location": "Sarasota, Florida", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "yellow", "id": "AVGO", "label": "AVGO", "location": "San Jose, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "lightblue", "id": "GIS", "label": "GIS", "location": "Golden Valley, Minnesota", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "yellow", "id": "HPQ", "label": "HPQ", "location": "Palo Alto, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Computer Hardware"}, {"color": "orange", "id": "CB", "label": "CB", "location": "Zurich, Switzerland", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Property \u0026 Casualty Insurance"}, {"color": "brown", "id": "EMN", "label": "EMN", "location": "Kingsport, Tennessee", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Diversified Chemicals"}, {"color": "lightblue", "id": "WMT", "label": "WMT", "location": "Bentonville, Arkansas", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Hypermarkets \u0026 Super Centers"}, {"color": "lightred", "id": "AZO", "label": "AZO", "location": "Memphis, Tennessee", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Specialty Stores"}, {"color": "orange", "id": "ALL", "label": "ALL", "location": "Northfield Township, Illinois", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Property \u0026 Casualty Insurance"}, {"color": "cyan", "id": "MRK", "label": "MRK", "location": "Whitehouse Station, New Jersey", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Pharmaceuticals"}, {"color": "brown", "id": "PPG", "label": "PPG", "location": "Pittsburgh, Pennsylvania", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Diversified Chemicals"}, {"color": "orange", "id": "XL", "label": "XL", "location": "Hamilton, Bermuda", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Property \u0026 Casualty Insurance"}, {"color": "yellow", "id": "FLIR", "label": "FLIR", "location": "Wilsonville, Oregon", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Electronic Equipment \u0026 Instruments"}, {"color": "yellow", "id": "IBM", "label": "IBM", "location": "Armonk, New York", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "IT Consulting \u0026 Other Services"}, {"color": "orange", "id": "L", "label": "L", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Multi-Sector Holdings"}, {"color": "brown", "id": "MOS", "label": "MOS", "location": "Plymouth, Minnesota", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Fertilizers \u0026 Agricultural Chemicals"}, {"color": "lightred", "id": "HAS", "label": "HAS", "location": "Pawtucket, Rhode Island", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Leisure Products"}, {"color": "orange", "id": "STI", "label": "STI", "location": "Atlanta, Georgia", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "gray", "id": "EIX", "label": "EIX", "location": "Rosemead, California", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "lightblue", "id": "HSY", "label": "HSY", "location": "Hershey, Pennsylvania", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "lightblue", "id": "CVS", "label": "CVS", "location": "Woonsocket, Rhode Island", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Drug Retail"}, {"color": "yellow", "id": "TSS", "label": "TSS", "location": "Columbus, Georgia", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "lightblue", "id": "CLX", "label": "CLX", "location": "Oakland, California", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Household Products"}, {"color": "magenta", "id": "EFX", "label": "EFX", "location": "Atlanta, Georgia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Research \u0026 Consulting Services"}, {"color": "lightred", "id": "CMG", "label": "CMG", "location": "Denver, Colorado", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Restaurants"}, {"color": "magenta", "id": "DOV", "label": "DOV", "location": "Downers Grove, Illinois", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Machinery"}, {"color": "yellow", "id": "ADBE", "label": "ADBE", "location": "San Jose, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Application Software"}, {"color": "lightblue", "id": "HRL", "label": "HRL", "location": "Austin, Minnesota", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "orange", "id": "AMG", "label": "AMG", "location": "Beverly, Massachusetts", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Asset Management \u0026 Custody Banks"}, {"color": "gray", "id": "NRG", "label": "NRG", "location": "Princeton, New Jersey", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Independent Power Producers \u0026 Energy Traders"}, {"color": "gray", "id": "AWK", "label": "AWK", "location": "Voorhees, New Jersey", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Water Utilities"}, {"color": "lightred", "id": "URBN", "label": "URBN", "location": "Philadelphia, Pennsylvania", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel Retail"}, {"color": "lightred", "id": "PVH", "label": "PVH", "location": "New York, New York", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel, Accessories \u0026 Luxury Goods"}, {"color": "lightred", "id": "SBUX", "label": "SBUX", "location": "Seattle, Washington", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Restaurants"}, {"color": "orange", "id": "BBT", "label": "BBT", "location": "Winston-Salem, North Carolina", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "magenta", "id": "GE", "label": "GE", "location": "Fairfield, Connecticut", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "pink", "id": "HST", "label": "HST", "location": "Bethesda, Maryland", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "lightblue", "id": "KMB", "label": "KMB", "location": "Irving, Texas", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Household Products"}, {"color": "green", "id": "EQT", "label": "EQT", "location": "Pittsburgh, Pennsylvania", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "orange", "id": "AJG", "label": "AJG", "location": "Itasca, Illinois", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Insurance Brokers"}, {"color": "yellow", "id": "EBAY", "label": "EBAY", "location": "San Jose, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "lightred", "id": "SWK", "label": "SWK", "location": "New Britain, Connecticut", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Household Appliances"}, {"color": "yellow", "id": "MU", "label": "MU", "location": "Boise, Idaho", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "magenta", "id": "AME", "label": "AME", "location": "Berwyn, Pennsylvania", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Electrical Components \u0026 Equipment"}, {"color": "orange", "id": "AXP", "label": "AXP", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Consumer Finance"}, {"color": "magenta", "id": "CMI", "label": "CMI", "location": "Columbus, Indiana", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Machinery"}, {"color": "orange", "id": "HBAN", "label": "HBAN", "location": "Columbus, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "yellow", "id": "AMAT", "label": "AMAT", "location": "Santa Clara, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductor Equipment"}, {"color": "gray", "id": "SCG", "label": "SCG", "location": "Cayce, South Carolina", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "lightred", "id": "HAR", "label": "HAR", "location": "Stamford, Connecticut", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Consumer Electronics"}, {"color": "pink", "id": "PLD", "label": "PLD", "location": "San Francisco, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "lightred", "id": "DG", "label": "DG", "location": "Goodlettsville, Tennessee", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "General Merchandise Stores"}, {"color": "magenta", "id": "WM", "label": "WM", "location": "Houston, Texas", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Environmental Services"}, {"color": "brown", "id": "DOW", "label": "DOW", "location": "Midland, Michigan", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Diversified Chemicals"}, {"color": "lightred", "id": "VIAB", "label": "VIAB", "location": "New York, New York", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Broadcasting \u0026 Cable TV"}, {"color": "green", "id": "COP", "label": "COP", "location": "Houston, Texas", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "gray", "id": "WEC", "label": "WEC", "location": "Milwaukee, Wisconsin", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "cyan", "id": "BAX", "label": "BAX", "location": "Deerfield, Illinois", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Equipment"}, {"color": "brown", "id": "NUE", "label": "NUE", "location": "Charlotte, North Carolina", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Steel"}, {"color": "magenta", "id": "RTN", "label": "RTN", "location": "Waltham, Massachusetts", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Aerospace \u0026 Defense"}, {"color": "lightred", "id": "TIF", "label": "TIF", "location": "New York, New York", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel, Accessories \u0026 Luxury Goods"}, {"color": "magenta", "id": "URI", "label": "URI", "location": "Stamford, Connecticut", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Trading Companies \u0026 Distributors"}, {"color": "cyan", "id": "ENDP", "label": "ENDP", "location": "Dublin, Ireland", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Pharmaceuticals"}, {"color": "orange", "id": "PRU", "label": "PRU", "location": "Newark, New Jersey", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "yellow", "id": "LLTC", "label": "LLTC", "location": "Milpitas, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Semiconductors"}, {"color": "brown", "id": "MON", "label": "MON", "location": "Creve Coeur, Missouri", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Fertilizers \u0026 Agricultural Chemicals"}]);
+                  edges = new vis.DataSet([{"from": "GT", "to": "PPL", "width": 1}, {"from": "PPL", "to": "SLB", "width": 1}, {"from": "PPL", "to": "SEE", "width": 1}, {"from": "ROST", "to": "TXT", "width": 1}, {"from": "TXT", "to": "EA", "width": 1}, {"from": "TXT", "to": "AFL", "width": 1}, {"from": "SYMC", "to": "V", "width": 1}, {"from": "SYMC", "to": "GS", "width": 1}, {"from": "SYMC", "to": "MSFT", "width": 1}, {"from": "CAG", "to": "NOV", "width": 1}, {"from": "ACN", "to": "F", "width": 1}, {"from": "BK", "to": "TSN", "width": 1}, {"from": "MCHP", "to": "VFC", "width": 1}, {"from": "MCHP", "to": "ES", "width": 1}, {"from": "GWW", "to": "PNC", "width": 1}, {"from": "GWW", "to": "HP", "width": 1}, {"from": "PNC", "to": "TRV", "width": 1}, {"from": "FCX", "to": "INTC", "width": 1}, {"from": "INTC", "to": "CTAS", "width": 1}, {"from": "NFLX", "to": "TAP", "width": 1}, {"from": "MUR", "to": "VZ", "width": 1}, {"from": "CMS", "to": "EXPD", "width": 1}, {"from": "CMS", "to": "D", "width": 1}, {"from": "IPG", "to": "JNJ", "width": 1}, {"from": "JNJ", "to": "LB", "width": 1}, {"from": "EA", "to": "PBCT", "width": 1}, {"from": "EA", "to": "RAI", "width": 1}, {"from": "QCOM", "to": "UPS", "width": 1}, {"from": "A", "to": "AN", "width": 1}, {"from": "BSX", "to": "FE", "width": 1}, {"from": "MRO", "to": "NBL", "width": 1}, {"from": "NDAQ", "to": "SEE", "width": 1}, {"from": "CERN", "to": "COO", "width": 1}, {"from": "CERN", "to": "ATVI", "width": 1}, {"from": "COO", "to": "TSO", "width": 1}, {"from": "DLTR", "to": "FL", "width": 1}, {"from": "UNP", "to": "WDC", "width": 1}, {"from": "RSG", "to": "UDR", "width": 1}, {"from": "FMC", "to": "UTX", "width": 1}, {"from": "OKE", "to": "SWN", "width": 1}, {"from": "HD", "to": "LLL", "width": 1}, {"from": "HD", "to": "IFF", "width": 1}, {"from": "AGN", "to": "FTI", "width": 1}, {"from": "AGN", "to": "BCR", "width": 1}, {"from": "FTI", "to": "MO", "width": 1}, {"from": "DAL", "to": "NTRS", "width": 1}, {"from": "DAL", "to": "CMCSA", "width": 1}, {"from": "MNST", "to": "RRC", "width": 1}, {"from": "RRC", "to": "TGNA", "width": 1}, {"from": "AVY", "to": "MYL", "width": 1}, {"from": "FISV", "to": "LUK", "width": 1}, {"from": "LUK", "to": "TSO", "width": 1}, {"from": "CF", "to": "STT", "width": 1}, {"from": "CTL", "to": "PAYX", "width": 1}, {"from": "CTL", "to": "TRV", "width": 1}, {"from": "CTL", "to": "EQIX", "width": 1}, {"from": "ADI", "to": "MLM", "width": 1}, {"from": "DGX", "to": "HCN", "width": 1}, {"from": "HP", "to": "K", "width": 1}, {"from": "RHT", "to": "XEC", "width": 1}, {"from": "RHT", "to": "KEY", "width": 1}, {"from": "DIS", "to": "TGT", "width": 1}, {"from": "TGT", "to": "APC", "width": 1}, {"from": "TSO", "to": "ROP", "width": 1}, {"from": "AVGO", "to": "GIS", "width": 1}, {"from": "AVGO", "to": "HPQ", "width": 1}, {"from": "ROP", "to": "CB", "width": 1}, {"from": "EMN", "to": "WMT", "width": 1}, {"from": "ATVI", "to": "AZO", "width": 1}, {"from": "ALL", "to": "MRK", "width": 1}, {"from": "PPG", "to": "XL", "width": 1}, {"from": "FLIR", "to": "IBM", "width": 1}, {"from": "L", "to": "MOS", "width": 1}, {"from": "HAS", "to": "STI", "width": 1}, {"from": "EIX", "to": "HSY", "width": 1}, {"from": "CVS", "to": "TSS", "width": 1}, {"from": "CLX", "to": "EFX", "width": 1}, {"from": "CMG", "to": "DOV", "width": 1}, {"from": "ADBE", "to": "HRL", "width": 1}, {"from": "AMG", "to": "NRG", "width": 1}, {"from": "AWK", "to": "URBN", "width": 1}, {"from": "PVH", "to": "SBUX", "width": 1}, {"from": "BBT", "to": "GE", "width": 1}, {"from": "HST", "to": "KMB", "width": 1}, {"from": "KMB", "to": "EQT", "width": 1}, {"from": "AJG", "to": "EBAY", "width": 1}, {"from": "EBAY", "to": "SWK", "width": 1}, {"from": "EBAY", "to": "MU", "width": 1}, {"from": "AME", "to": "AXP", "width": 1}, {"from": "CMI", "to": "HBAN", "width": 1}, {"from": "AMAT", "to": "SCG", "width": 1}, {"from": "HAR", "to": "PLD", "width": 1}, {"from": "DG", "to": "WM", "width": 1}, {"from": "DOW", "to": "VIAB", "width": 1}, {"from": "COP", "to": "WEC", "width": 1}, {"from": "SWK", "to": "BAX", "width": 1}, {"from": "NUE", "to": "RTN", "width": 1}, {"from": "TIF", "to": "URI", "width": 1}, {"from": "ENDP", "to": "PRU", "width": 1}, {"from": "LLTC", "to": "MON", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html><style>p { font-size: 20px; }</style>
+<p>{'Consumer Discretionary': 'lightred', 'Consumer Staples': 'lightblue', 'Energy': 'green', 'Financials': 'orange', 'Health Care': 'cyan', 'Industrials': 'magenta', 'Information Technology': 'yellow', 'Materials': 'brown', 'Real Estate': 'pink', 'Telecommunications Services': 'teal', 'Utilities': 'gray'}</p>

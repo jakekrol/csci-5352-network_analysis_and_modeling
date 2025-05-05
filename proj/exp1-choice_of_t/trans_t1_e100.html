@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "lightred", "id": "DLTR", "label": "DLTR", "location": "Chesapeake, Virginia", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "General Merchandise Stores"}, {"color": "brown", "id": "NEM", "label": "NEM", "location": "Denver, Colorado", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Gold"}, {"color": "green", "id": "RIG", "label": "RIG", "location": "Vernier, Switzerland", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Drilling"}, {"color": "green", "id": "SWN", "label": "SWN", "location": "Houston, Texas[6]", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Oil \u0026 Gas Exploration \u0026 Production"}, {"color": "magenta", "id": "DAL", "label": "DAL", "location": "Atlanta, Georgia", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Airlines"}, {"color": "lightred", "id": "CMG", "label": "CMG", "location": "Denver, Colorado", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Restaurants"}, {"color": "lightred", "id": "EXPE", "label": "EXPE", "location": "Bellevue, Washington", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Internet \u0026 Direct Marketing Retail"}, {"color": "magenta", "id": "UAL", "label": "UAL", "location": "Chicago, Illinois", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Airlines"}, {"color": "lightred", "id": "DG", "label": "DG", "location": "Goodlettsville, Tennessee", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "General Merchandise Stores"}, {"color": "cyan", "id": "ENDP", "label": "ENDP", "location": "Dublin, Ireland", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Pharmaceuticals"}, {"color": "magenta", "id": "AAL", "label": "AAL", "location": "Fort Worth, Texas", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Airlines"}, {"color": "lightred", "id": "KSS", "label": "KSS", "location": "Menomonee Falls, Wisconsin", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "General Merchandise Stores"}, {"color": "yellow", "id": "NFLX", "label": "NFLX", "location": "Los Gatos, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "magenta", "id": "ALK", "label": "ALK", "location": "Seattle, Washington", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Airlines"}, {"color": "lightred", "id": "NKE", "label": "NKE", "location": "Washington County, Oregon", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel, Accessories \u0026 Luxury Goods"}, {"color": "orange", "id": "SCHW", "label": "SCHW", "location": "San Francisco, California", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Investment Banking \u0026 Brokerage"}, {"color": "orange", "id": "HRB", "label": "HRB", "location": "Kansas City, Missouri", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Consumer Finance"}, {"color": "lightred", "id": "BBY", "label": "BBY", "location": "Richfield, Minnesota", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Computer \u0026 Electronics Retail"}, {"color": "cyan", "id": "CNC", "label": "CNC", "location": "St Louis, Missouri", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Managed Health Care"}, {"color": "lightblue", "id": "KR", "label": "KR", "location": "Cincinnati, Ohio", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Food Retail"}, {"color": "lightred", "id": "TJX", "label": "TJX", "location": "Framingham, Massachusetts", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel Retail"}, {"color": "lightred", "id": "ROST", "label": "ROST", "location": "Pleasanton, California", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel Retail"}, {"color": "lightred", "id": "AAP", "label": "AAP", "location": "Roanoke, Virginia", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Automotive Retail"}, {"color": "teal", "id": "LVLT", "label": "LVLT", "location": "Broomfield, Colorado", "sector": "Telecommunications Services", "shape": "dot", "size": 10, "subsector": "Alternative Carriers"}, {"color": "lightred", "id": "LOW", "label": "LOW", "location": "Mooresville, North Carolina", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Home Improvement Retail"}, {"color": "cyan", "id": "AGN", "label": "AGN", "location": "Dublin, Ireland", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Pharmaceuticals"}, {"color": "cyan", "id": "PRGO", "label": "PRGO", "location": "Dublin, Ireland", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Pharmaceuticals"}, {"color": "magenta", "id": "RHI", "label": "RHI", "location": "Menlo Park, California", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Human Resource \u0026 Employment Services"}, {"color": "lightred", "id": "TGT", "label": "TGT", "location": "Minneapolis, Minnesota", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "General Merchandise Stores"}, {"color": "lightred", "id": "AZO", "label": "AZO", "location": "Memphis, Tennessee", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Specialty Stores"}, {"color": "magenta", "id": "SRCL", "label": "SRCL", "location": "Lake Forest, Illinois", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Industrial Conglomerates"}, {"color": "lightred", "id": "M", "label": "M", "location": "Cincinnati, Ohio", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Department Stores"}, {"color": "lightred", "id": "UAA", "label": "UAA", "location": "Baltimore, Maryland", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel, Accessories \u0026 Luxury Goods"}, {"color": "magenta", "id": "VRSK", "label": "VRSK", "location": "Jersey City, New Jersey", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Research \u0026 Consulting Services"}, {"color": "lightred", "id": "FL", "label": "FL", "location": "New York, New York", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel Retail"}, {"color": "cyan", "id": "HUM", "label": "HUM", "location": "Louisville, Kentucky", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Managed Health Care"}, {"color": "cyan", "id": "AMGN", "label": "AMGN", "location": "Thousand Oaks, California", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Biotechnology"}, {"color": "orange", "id": "PBCT", "label": "PBCT", "location": "Bridgeport, Connecticut", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Thrifts \u0026 Mortgage Finance"}, {"color": "lightred", "id": "HD", "label": "HD", "location": "Atlanta, Georgia", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Home Improvement Retail"}, {"color": "lightblue", "id": "MDLZ", "label": "MDLZ", "location": "Northfield, Illinois", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "lightblue", "id": "WBA", "label": "WBA", "location": "Deerfield, Illinois", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Drug Retail"}, {"color": "magenta", "id": "LUV", "label": "LUV", "location": "Dallas, Texas", "sector": "Industrials", "shape": "dot", "size": 10, "subsector": "Airlines"}, {"color": "lightred", "id": "PCLN", "label": "PCLN", "location": "Norwalk, Connecticut", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Internet \u0026 Direct Marketing Retail"}, {"color": "yellow", "id": "PAYX", "label": "PAYX", "location": "Penfield, New York", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "orange", "id": "FITB", "label": "FITB", "location": "Cincinnati, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "lightred", "id": "TSCO", "label": "TSCO", "location": "Brentwood, Tennessee", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Specialty Retail"}, {"color": "cyan", "id": "AET", "label": "AET", "location": "Hartford, Connecticut", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Managed Health Care"}, {"color": "lightred", "id": "DRI", "label": "DRI", "location": "Orlando, Florida", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Restaurants"}, {"color": "lightred", "id": "JWN", "label": "JWN", "location": "Seattle, Washington", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Department Stores"}, {"color": "lightred", "id": "ORLY", "label": "ORLY", "location": "Springfield, Missouri", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Specialty Stores"}, {"color": "orange", "id": "ETFC", "label": "ETFC", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Investment Banking \u0026 Brokerage"}, {"color": "orange", "id": "BBT", "label": "BBT", "location": "Winston-Salem, North Carolina", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "lightred", "id": "RL", "label": "RL", "location": "New York, New York", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel, Accessories \u0026 Luxury Goods"}, {"color": "yellow", "id": "WU", "label": "WU", "location": "Englewood, Colorado", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "lightred", "id": "HBI", "label": "HBI", "location": "Winston-Salem, North Carolina", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel, Accessories \u0026 Luxury Goods"}, {"color": "yellow", "id": "V", "label": "V", "location": "San Francisco, California", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "cyan", "id": "GILD", "label": "GILD", "location": "Foster City, California", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Biotechnology"}, {"color": "orange", "id": "RF", "label": "RF", "location": "Birmingham, Alabama", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "lightred", "id": "ULTA", "label": "ULTA", "location": "Bolingbrook, Illinois", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Specialty Stores"}, {"color": "lightred", "id": "PVH", "label": "PVH", "location": "New York, New York", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Apparel, Accessories \u0026 Luxury Goods"}, {"color": "cyan", "id": "CI", "label": "CI", "location": "Philadelphia, Pennsylvania", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Managed Health Care"}, {"color": "pink", "id": "EQIX", "label": "EQIX", "location": "Redwood City, California", "sector": "Real Estate", "shape": "dot", "size": 10, "subsector": "REITs"}, {"color": "cyan", "id": "ANTM", "label": "ANTM", "location": "Indianapolis, Indiana", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Managed Health Care"}, {"color": "yellow", "id": "AKAM", "label": "AKAM", "location": "Cambridge, Massachusetts", "sector": "Information Technology", "shape": "dot", "size": 10, "subsector": "Internet Software \u0026 Services"}, {"color": "orange", "id": "HBAN", "label": "HBAN", "location": "Columbus, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "lightred", "id": "LKQ", "label": "LKQ", "location": "Chicago, Illinois", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Distributors"}, {"color": "orange", "id": "KEY", "label": "KEY", "location": "Cleveland, Ohio", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "orange", "id": "SPGI", "label": "SPGI", "location": "New York, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Diversified Financial Services"}, {"color": "lightblue", "id": "WMT", "label": "WMT", "location": "Bentonville, Arkansas", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Hypermarkets \u0026 Super Centers"}, {"color": "cyan", "id": "ABT", "label": "ABT", "location": "North Chicago, Illinois", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Equipment"}, {"color": "lightred", "id": "YUM", "label": "YUM", "location": "Louisville, Kentucky", "sector": "Consumer Discretionary", "shape": "dot", "size": 10, "subsector": "Restaurants"}, {"color": "orange", "id": "MTB", "label": "MTB", "location": "Buffalo, New York", "sector": "Financials", "shape": "dot", "size": 10, "subsector": "Banks"}, {"color": "gray", "id": "EXC", "label": "EXC", "location": "Chicago, Illinois", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "green", "id": "CHK", "label": "CHK", "location": "Oklahoma City, Oklahoma", "sector": "Energy", "shape": "dot", "size": 10, "subsector": "Integrated Oil \u0026 Gas"}, {"color": "lightblue", "id": "K", "label": "K", "location": "Battle Creek, Michigan", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "lightblue", "id": "CPB", "label": "CPB", "location": "Camden, New Jersey", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Packaged Foods \u0026 Meats"}, {"color": "gray", "id": "ED", "label": "ED", "location": "New York, New York", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "DUK", "label": "DUK", "location": "Charlotte, North Carolina", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "PCG", "label": "PCG", "location": "San Francisco, California", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "MultiUtilities"}, {"color": "gray", "id": "EIX", "label": "EIX", "location": "Rosemead, California", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "SO", "label": "SO", "location": "Atlanta, Georgia", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "ETR", "label": "ETR", "location": "New Orleans, Louisiana", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "gray", "id": "FE", "label": "FE", "location": "Akron, Ohio", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "cyan", "id": "DGX", "label": "DGX", "location": "Madison, New Jersey", "sector": "Health Care", "shape": "dot", "size": 10, "subsector": "Health Care Facilities"}, {"color": "gray", "id": "D", "label": "D", "location": "Richmond, Virginia", "sector": "Utilities", "shape": "dot", "size": 10, "subsector": "Electric Utilities"}, {"color": "teal", "id": "FTR", "label": "FTR", "location": "Stamford, Connecticut", "sector": "Telecommunications Services", "shape": "dot", "size": 10, "subsector": "Integrated Telecommunications Services"}, {"color": "teal", "id": "VZ", "label": "VZ", "location": "New York, New York", "sector": "Telecommunications Services", "shape": "dot", "size": 10, "subsector": "Integrated Telecommunications Services"}, {"color": "lightblue", "id": "KMB", "label": "KMB", "location": "Irving, Texas", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Household Products"}, {"color": "lightblue", "id": "MNST", "label": "MNST", "location": "Corona, California", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Soft Drinks"}, {"color": "brown", "id": "CF", "label": "CF", "location": "Deerfield, Illinois", "sector": "Materials", "shape": "dot", "size": 10, "subsector": "Fertilizers \u0026 Agricultural Chemicals"}, {"color": "teal", "id": "CTL", "label": "CTL", "location": "Monroe, Louisiana", "sector": "Telecommunications Services", "shape": "dot", "size": 10, "subsector": "Integrated Telecommunications Services"}, {"color": "lightblue", "id": "STZ", "label": "STZ", "location": "Victor, New York", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Distillers \u0026 Vintners"}, {"color": "lightblue", "id": "DPS", "label": "DPS", "location": "Plano, Texas", "sector": "Consumer Staples", "shape": "dot", "size": 10, "subsector": "Soft Drinks"}]);
+                  edges = new vis.DataSet([{"from": "DLTR", "to": "NEM", "width": 1}, {"from": "DLTR", "to": "RIG", "width": 1}, {"from": "DLTR", "to": "SWN", "width": 1}, {"from": "NEM", "to": "DAL", "width": 1}, {"from": "NEM", "to": "CMG", "width": 1}, {"from": "NEM", "to": "EXPE", "width": 1}, {"from": "NEM", "to": "UAL", "width": 1}, {"from": "NEM", "to": "DG", "width": 1}, {"from": "NEM", "to": "ENDP", "width": 1}, {"from": "NEM", "to": "AAL", "width": 1}, {"from": "NEM", "to": "KSS", "width": 1}, {"from": "NEM", "to": "NFLX", "width": 1}, {"from": "NEM", "to": "ALK", "width": 1}, {"from": "NEM", "to": "NKE", "width": 1}, {"from": "NEM", "to": "SCHW", "width": 1}, {"from": "NEM", "to": "HRB", "width": 1}, {"from": "NEM", "to": "BBY", "width": 1}, {"from": "NEM", "to": "CNC", "width": 1}, {"from": "NEM", "to": "KR", "width": 1}, {"from": "NEM", "to": "TJX", "width": 1}, {"from": "NEM", "to": "ROST", "width": 1}, {"from": "NEM", "to": "AAP", "width": 1}, {"from": "NEM", "to": "LVLT", "width": 1}, {"from": "NEM", "to": "LOW", "width": 1}, {"from": "NEM", "to": "AGN", "width": 1}, {"from": "NEM", "to": "PRGO", "width": 1}, {"from": "NEM", "to": "RHI", "width": 1}, {"from": "NEM", "to": "TGT", "width": 1}, {"from": "NEM", "to": "AZO", "width": 1}, {"from": "NEM", "to": "SRCL", "width": 1}, {"from": "NEM", "to": "M", "width": 1}, {"from": "NEM", "to": "UAA", "width": 1}, {"from": "NEM", "to": "VRSK", "width": 1}, {"from": "NEM", "to": "FL", "width": 1}, {"from": "NEM", "to": "HUM", "width": 1}, {"from": "NEM", "to": "AMGN", "width": 1}, {"from": "NEM", "to": "PBCT", "width": 1}, {"from": "NEM", "to": "HD", "width": 1}, {"from": "NEM", "to": "MDLZ", "width": 1}, {"from": "NEM", "to": "WBA", "width": 1}, {"from": "NEM", "to": "LUV", "width": 1}, {"from": "NEM", "to": "PCLN", "width": 1}, {"from": "NEM", "to": "PAYX", "width": 1}, {"from": "NEM", "to": "FITB", "width": 1}, {"from": "NEM", "to": "TSCO", "width": 1}, {"from": "NEM", "to": "AET", "width": 1}, {"from": "NEM", "to": "DRI", "width": 1}, {"from": "NEM", "to": "JWN", "width": 1}, {"from": "NEM", "to": "ORLY", "width": 1}, {"from": "NEM", "to": "ETFC", "width": 1}, {"from": "NEM", "to": "BBT", "width": 1}, {"from": "NEM", "to": "RL", "width": 1}, {"from": "NEM", "to": "WU", "width": 1}, {"from": "NEM", "to": "HBI", "width": 1}, {"from": "NEM", "to": "V", "width": 1}, {"from": "NEM", "to": "GILD", "width": 1}, {"from": "NEM", "to": "RF", "width": 1}, {"from": "NEM", "to": "ULTA", "width": 1}, {"from": "NEM", "to": "PVH", "width": 1}, {"from": "NEM", "to": "CI", "width": 1}, {"from": "NEM", "to": "EQIX", "width": 1}, {"from": "NEM", "to": "ANTM", "width": 1}, {"from": "NEM", "to": "AKAM", "width": 1}, {"from": "NEM", "to": "HBAN", "width": 1}, {"from": "NEM", "to": "LKQ", "width": 1}, {"from": "NEM", "to": "KEY", "width": 1}, {"from": "NEM", "to": "SPGI", "width": 1}, {"from": "NEM", "to": "WMT", "width": 1}, {"from": "NEM", "to": "ABT", "width": 1}, {"from": "NEM", "to": "YUM", "width": 1}, {"from": "NEM", "to": "MTB", "width": 1}, {"from": "CMG", "to": "EXC", "width": 1}, {"from": "DG", "to": "RIG", "width": 1}, {"from": "DG", "to": "CHK", "width": 1}, {"from": "ENDP", "to": "K", "width": 1}, {"from": "ENDP", "to": "CPB", "width": 1}, {"from": "NFLX", "to": "ED", "width": 1}, {"from": "NFLX", "to": "DUK", "width": 1}, {"from": "NFLX", "to": "PCG", "width": 1}, {"from": "NFLX", "to": "EIX", "width": 1}, {"from": "NFLX", "to": "SO", "width": 1}, {"from": "NFLX", "to": "ETR", "width": 1}, {"from": "NFLX", "to": "FE", "width": 1}, {"from": "NFLX", "to": "DGX", "width": 1}, {"from": "NFLX", "to": "D", "width": 1}, {"from": "NFLX", "to": "EXC", "width": 1}, {"from": "NFLX", "to": "FTR", "width": 1}, {"from": "NFLX", "to": "VZ", "width": 1}, {"from": "NFLX", "to": "KMB", "width": 1}, {"from": "RIG", "to": "ED", "width": 1}, {"from": "RIG", "to": "MNST", "width": 1}, {"from": "ED", "to": "UAA", "width": 1}, {"from": "ED", "to": "CF", "width": 1}, {"from": "UAA", "to": "FE", "width": 1}, {"from": "UAA", "to": "SO", "width": 1}, {"from": "CTL", "to": "STZ", "width": 1}, {"from": "SWN", "to": "DPS", "width": 1}, {"from": "SWN", "to": "MNST", "width": 1}, {"from": "DPS", "to": "CHK", "width": 1}, {"from": "CHK", "to": "WMT", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html><style>p { font-size: 20px; }</style>
+<p>{'Consumer Discretionary': 'lightred', 'Consumer Staples': 'lightblue', 'Energy': 'green', 'Financials': 'orange', 'Health Care': 'cyan', 'Industrials': 'magenta', 'Information Technology': 'yellow', 'Materials': 'brown', 'Real Estate': 'pink', 'Telecommunications Services': 'teal', 'Utilities': 'gray'}</p>
